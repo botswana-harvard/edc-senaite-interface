@@ -15,7 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+ETC_DIR = os.path.join(BASE_DIR, 'etc')
 
+APP_NAME = 'edc_senaite_interface'
+
+SITE_ID = 1
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -37,6 +41,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django_crypto_fields.apps.AppConfig',
+    'django_extensions',
+    'edc_lab.apps.AppConfig',
+    'edc_visit_schedule.apps.AppConfig',
+    'edc_timepoint.apps.AppConfig',
+    'edc_appointment.apps.AppConfig',
+    'edc_model_admin.apps.AppConfig',
+    'edc_base.apps.AppConfig',
+    'edc_device.apps.AppConfig',
+    'edc_senaite_interface.apps.AppConfig'
 ]
 
 MIDDLEWARE = [
@@ -100,6 +115,17 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# dashboards
+DASHBOARD_URL_NAMES = {
+
+}
+
+LAB_DASHBOARD_URL_NAMES = {}
+
+DASHBOARD_BASE_TEMPLATES = {
+
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -112,6 +138,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+SITE_CODE = '1'
+DEFAULT_STUDY_SITE = '1'
+REVIEWER_SITE_ID = 41
 
 
 # Static files (CSS, JavaScript, Images)

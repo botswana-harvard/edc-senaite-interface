@@ -1,0 +1,1 @@
+from .requisition_model_mixin import SenaiteRequisitionModelMixin
