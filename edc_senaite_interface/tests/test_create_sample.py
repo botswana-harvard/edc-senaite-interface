@@ -8,26 +8,26 @@ from ..models import SenaiteUser
 class TestSendMessage(TestCase):
 
     def setUp(self):
-        self.host = "http://localhost:8080"
+        self.host = "https://senaite-server.bhp.org.bw/"
         self.user = "ckgathi"
         self.password = "thabo321"
     
         senaite_user = SenaiteUser.objects.create(
             username='ckgathi',
-            contact='Coulson Kgathi',
+            contact='Coulson CTK Thabo Kgathi',
             password='thabo321')
     
         requisition_options = {}
     
         self.data = {
-            "Client": "IMPAACT 1093 Molepolole",
-            "Contact": "Gaerolwe Masheto",
-            "SampleType": "Plasma EDTA",
+            "Client": "AZD1222",
+            "Contact": "Coulson CTK Thabo Kgathi",
+            "SampleType": "SARS-COV-2 Serology",
             "DateSampled": datetime.now().strftime("%Y-%m-%d %H:%M"), # "2020-07-02 14:21:20",
             "Template": "PBMC/PL STORAGE",
             "DefaultContainerType": "EDTA Tube",
             # Fields specific from BHP
-            "ParticipantID": "11111111111111111111",
+            "ParticipantID": "12342342333",
             "ParticipantInitials": "CK",
             "Gender": "m",
             "Visit": 2,
@@ -39,6 +39,7 @@ class TestSendMessage(TestCase):
     def test_create_sample(self):
         """
         """
+        print(self.host, '#################')
         importer = SampleImporter(host=self.host)
         if importer.auth(self.user, self.password):
             importer.create_sample(data=self.data)
