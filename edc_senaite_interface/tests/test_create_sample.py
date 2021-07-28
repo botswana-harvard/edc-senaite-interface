@@ -22,10 +22,10 @@ class TestSendMessage(TestCase):
         self.data = {
             "Client": "AZD1222",
             "Contact": "Coulson CTK Thabo Kgathi",
-            "SampleType": "SARS-COV-2 Serology",
+            "SampleType": "Serum",
             "DateSampled": datetime.now().strftime("%Y-%m-%d %H:%M"), # "2020-07-02 14:21:20",
-            "Template": "PBMC/PL STORAGE",
-            "DefaultContainerType": "EDTA Tube",
+            "Template": "SARS-COV-2 Serology",
+            "DefaultContainerType": "Cryogenic Vial",
             # Fields specific from BHP
             "ParticipantID": "12342342333",
             "ParticipantInitials": "CK",
