@@ -8,19 +8,17 @@ app_config = django_apps.get_app_config('edc_senaite_interface')
 
 
 class SenaiteRequisitionModelMixin:
-    
+
     consent_model = None  # td_maternal.subjectconset
     visit_model_attr = None    # maternal_visit
 
-
     def data(self):
         data = {}
-        
         data.update(
             Client=app_config.client,
             Contact=self.contact,
             SampleType=self.sample_type,
-            DateSampled=self.drawn_datetime,
+            DateSampled=self.drawn_datetime.strftime("%Y-%m-%d %H:%M"),
             Template=self.template,
             DefaultContainerType=self.default_container_type,
             ParticipantID=self.subject_identifier,
@@ -29,15 +27,14 @@ class SenaiteRequisitionModelMixin:
             Visit=self.visit_code,
             VisitCode=self.visit_code,
             DateOfBirth=self.dob,
-            Volume=self.estimated_volume)
+            Volume=f'{self.estimated_volume}mL')
         return data
-
 
     def create_senaite_sample(self):
 
         importer = SampleImporter()
         if importer.auth(self.senaite_username, self.senaite_password):
-            importer.create_sample(data=self.data())
+            return importer.create_sample(data=self.data())
         else:
             print("Cannot authenticate")
 
@@ -47,7 +44,7 @@ class SenaiteRequisitionModelMixin:
             self.consent_model).objects.filter(
                 subject_identifier=self.subject_identifier).last()
         return consent
-    
+
     @property
     def initials(self):
         return self.consent_obj.initials
@@ -78,7 +75,7 @@ class SenaiteRequisitionModelMixin:
             raise EdcSenaiteInterfaceError(
                 f'Senaite user infor for {self.user_created}')
         else:
-            return self.created
+            return self.user_created
 
     @property
     def senaite_password(self):
