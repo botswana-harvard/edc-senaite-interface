@@ -10,7 +10,9 @@ def senaite_sample_create_on_post_save(
     """
     if not raw:
         try:
-            instance.senaite_sample_create()
+            resp = instance.create_senaite_sample()
         except AttributeError as e:
-            if 'senaite_sample_create' not in str(e):
+            if 'create_senaite_sample' not in str(e):
                 raise
+        else:
+            print(resp.json())

@@ -28,6 +28,7 @@ class SampleImporter(object):
             print(f"Object created: {id}")
 
         print("Total requests: {self._number_of_requests}")
+        return response
 
     def resolve_uids(self, data):
         """Creates a Sample in SENAITE using the JSON API
