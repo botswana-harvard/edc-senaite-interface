@@ -28,11 +28,12 @@ class SenaiteRequisitionModelMixin(models.Model):
             DefaultContainerType=self.default_container_type,
             ParticipantID=self.subject_identifier,
             ParticipantInitials=self.initials,
-            Gender=self.gender,
+            OtherParticipantReference=self.requisition_identifier,
+            Gender=self.gender.lower(),
             Visit=self.visit_code,
             VisitCode=self.visit_code,
-            DateOfBirth=self.dob,
-            Volume=f'{self.estimated_volume}mL')
+            DateOfBirth=self.dob.strftime("%Y-%m-%d"),
+            Volume=float(self.estimated_volume))
         return data
 
     def create_senaite_sample(self):
@@ -56,11 +57,11 @@ class SenaiteRequisitionModelMixin(models.Model):
 
     @property
     def gender(self):
-        self.consent_obj.gender
+        return self.consent_obj.gender
 
     @property
     def dob(self):
-        self.consent_obj.dob
+        return self.consent_obj.dob
 
     @property
     def visit(self):
