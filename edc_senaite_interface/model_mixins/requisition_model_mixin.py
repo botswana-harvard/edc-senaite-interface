@@ -1,4 +1,5 @@
 from django.apps import apps as django_apps
+from django.db import models
 
 from ..classes import SampleImporter
 from ..exceptions import EdcSenaiteInterfaceError
@@ -7,10 +8,14 @@ from ..models import SenaiteUser
 app_config = django_apps.get_app_config('edc_senaite_interface')
 
 
-class SenaiteRequisitionModelMixin:
+class SenaiteRequisitionModelMixin(models.Model):
 
     consent_model = None  # td_maternal.subjectconset
     visit_model_attr = None    # maternal_visit
+
+    sample_id = models.CharField(
+        verbose_name="LIS generated Sample Identifier",
+        max_length=50)
 
     def data(self):
         data = {}
@@ -125,3 +130,6 @@ class SenaiteRequisitionModelMixin:
         """
         return app_config.container_type_match.get(
             self.panel.name, None)
+
+    class Meta:
+        abstract = True
