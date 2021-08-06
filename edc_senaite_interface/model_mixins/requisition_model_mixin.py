@@ -28,7 +28,7 @@ class SenaiteRequisitionModelMixin(models.Model):
             DefaultContainerType=self.default_container_type,
             ParticipantID=self.subject_identifier,
             ParticipantInitials=self.initials,
-            OtherParticipantReference=self.requisition_identifier,
+            ClientSampleID=self.requisition_identifier,
             Gender=self.gender.lower(),
             Visit=self.visit_code,
             VisitCode=self.visit_code,
@@ -36,11 +36,15 @@ class SenaiteRequisitionModelMixin(models.Model):
             Volume=float(self.estimated_volume))
         return data
 
-    def create_senaite_sample(self):
+    def save_senaite_sample(self, method='create'):
 
         importer = SampleImporter()
         if importer.auth(self.senaite_username, self.senaite_password):
-            return importer.create_sample(data=self.data())
+            if method == 'create':
+                return importer.create_sample(data=self.data())
+            elif method == 'update':
+                sample_id = self.sample_id
+                return importer.update_sample(identifier=sample_id, data=self.data())
         else:
             print("Cannot authenticate")
 

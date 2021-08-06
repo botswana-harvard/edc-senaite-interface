@@ -30,6 +30,25 @@ class SampleImporter(object):
         print("Total requests: {self._number_of_requests}")
         return response
 
+    def update_sample(self, identifier=None, data=None):
+        values = self.resolve_uids(data)
+
+        # Cannot update client, sample type and template... unauthorized.
+        exclude = ['Client', 'SampleType', 'Template']
+        for value in exclude:
+            values.pop(value)
+
+        sample_uid = self.get_uid("AnalysisRequest", id=identifier)
+        slug = f'AnalysisRequest/update/{sample_uid}'
+        response = self.post(slug, values)
+        result = json.loads(response.text)
+        items = result.get("items")
+        if items:
+            id = items[0].get("id")
+            print(f"Object updated: {id}")
+
+        print("Total requests: {self._number_of_requests}")
+
     def resolve_uids(self, data):
         """Creates a Sample in SENAITE using the JSON API
         """

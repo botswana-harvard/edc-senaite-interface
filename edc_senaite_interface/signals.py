@@ -9,10 +9,21 @@ def senaite_sample_create_on_post_save(
     """Calls post_save method on the requisition instance.
     """
     if not raw:
-        try:
-            resp = instance.create_senaite_sample()
-        except AttributeError as e:
-            if 'create_senaite_sample' not in str(e):
-                raise
+        if created:
+            try:
+                resp = instance.save_senaite_sample()
+            except AttributeError as e:
+                if 'save_senaite_sample' not in str(e):
+                    raise
+            else:
+                resp_dict = resp.json()
+                sample_items = resp_dict.get('items', [])
+                sample_id = sample_items[0].get('id') if sample_items else None
+                instance.sample_id = sample_id
+                instance.save_base(raw=True)
         else:
-            print(resp.json())
+            try:
+                resp = instance.save_senaite_sample(method='update')
+            except AttributeError as e:
+                if 'save_senaite_sample' not in str(e):
+                    raise
