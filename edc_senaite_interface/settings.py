@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'edc_appointment.apps.AppConfig',
     'edc_model_admin.apps.AppConfig',
     'edc_base.apps.AppConfig',
-    'edc_device.apps.AppConfig',
+    'edc_senaite_interface.apps.EdcDeviceAppConfig',
     'edc_senaite_interface.apps.AppConfig'
 ]
 
@@ -144,6 +144,8 @@ SITE_CODE = '1'
 DEFAULT_STUDY_SITE = '1'
 REVIEWER_SITE_ID = 41
 
+DEVICE_ROLE = 'CentralServer'
+DEVICE_ID = '99'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
