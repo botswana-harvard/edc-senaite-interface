@@ -1,5 +1,6 @@
 from django.test import TestCase
 from datetime import datetime
+from django.core.exceptions import ValidationError
 
 from ..classes import SampleImporter
 from ..models import SenaiteUser
@@ -12,12 +13,10 @@ class TestSendMessage(TestCase):
         self.user = "ckgathi"
         self.password = "thabo321"
     
-        senaite_user = SenaiteUser.objects.create(
+        SenaiteUser.objects.create(
             username='ckgathi',
             contact='Coulson CTK Thabo Kgathi',
             password='thabo321')
-    
-        requisition_options = {}
     
         self.data = {
             "Client": "AZD1222",
@@ -36,18 +35,12 @@ class TestSendMessage(TestCase):
             "Volume": "10mL",
         }
 
+
     def test_create_sample(self):
         """
         """
-        print(self.host, '#################')
         importer = SampleImporter(host=self.host)
         if importer.auth(self.user, self.password):
             importer.create_sample(data=self.data)
         else:
-            print("Cannot authenticate")
-
-    def test_create_sample_using_requisition(self):
-        """Test create sample on LIS using requisition.
-        """
-        pass
-
+            raise ValidationError('Cannot authenticate')

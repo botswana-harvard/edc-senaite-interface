@@ -17,6 +17,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         verbose_name="LIS generated Sample Identifier",
         max_length=50)
 
+    @property
     def data(self):
         data = {}
         data.update(
@@ -37,14 +38,13 @@ class SenaiteRequisitionModelMixin(models.Model):
         return data
 
     def save_senaite_sample(self, method='create'):
-
-        importer = SampleImporter()
+        importer = SampleImporter(host=app_config.host)
         if importer.auth(self.senaite_username, self.senaite_password):
             if method == 'create':
-                return importer.create_sample(data=self.data())
+                return importer.create_sample(data=self.data)
             elif method == 'update':
                 sample_id = self.sample_id
-                return importer.update_sample(identifier=sample_id, data=self.data())
+                return importer.update_sample(identifier=sample_id, data=self.data)
         else:
             print("Cannot authenticate")
 
@@ -82,8 +82,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         try:
             SenaiteUser.objects.get(username=self.user_created)
         except SenaiteUser.DoesNotExist:
-            raise EdcSenaiteInterfaceError(
-                f'Senaite user infor for {self.user_created}')
+            pass
         else:
             return self.user_created
 
@@ -94,8 +93,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         try:
             senaite_user = SenaiteUser.objects.get(username=self.user_created)
         except SenaiteUser.DoesNotExist:
-            raise EdcSenaiteInterfaceError(
-                f'Senaite user infor for {self.user_created} does not exist.')
+            pass
         else:
             return senaite_user.password
 
