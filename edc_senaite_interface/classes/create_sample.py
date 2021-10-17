@@ -26,17 +26,23 @@ class SampleImporter(object):
         if items:
             id = items[0].get("id")
             print(f"Object created: {id}")
+            print(f'Transition sample {id} to Lab....')
+            transition_data = {'transition': 'send_to_lab'}
+            self.update_sample(identifier=id, data=transition_data)
+            print(f'Sample {id} successfully sent to lab')
 
         print("Total requests: {self._number_of_requests}")
         return response
 
     def update_sample(self, identifier=None, data=None):
-        values = self.resolve_uids(data)
+        values = data
+        if 'transition' not in data.keys():
+            values = self.resolve_uids(data)
 
-        # Cannot update client, sample type and template... unauthorized.
-        exclude = ['Client', 'SampleType', 'Template']
-        for value in exclude:
-            values.pop(value)
+            # Cannot update client, sample type and template... unauthorized.
+            exclude = ['Client', 'SampleType', 'Template']
+            for value in exclude:
+                values.pop(value)
 
         sample_uid = self.get_uid("AnalysisRequest", id=identifier)
         slug = f'AnalysisRequest/update/{sample_uid}'
@@ -53,28 +59,32 @@ class SampleImporter(object):
         """Creates a Sample in SENAITE using the JSON API
         """
         # Get the uid of the client of the Sample
-        client_uid = self.get_uid("Client", Title=data["Client"])
+        client_uid = self.get_uid("Client", Title=data.get('Client'))
 
         # Get the uid of the Contact
         contact_uid = self.get_uid("Contact",
                                    getParentUID=client_uid,
-                                   getFullname=data["Contact"])
+                                   getFullname=data.get('Contact'))
 
         # Get the uid of the Sample type
         st_uid = self.get_uid("SampleType",
                               catalog="bika_setup_catalog",
-                              Title=data["SampleType"])
+                              Title=data.get('SampleType'))
 
         # Resolve the container type uid
         ct_uid = self.get_uid("ContainerType",
                               catalog="bika_setup_catalog",
-                              Title=data["DefaultContainerType"])
+                              Title=data.get('DefaultContainerType'))
 
         # Resolve the uid of the Template
         at_uid = self.get_uid("ARTemplate",
                               catalog="bika_setup_catalog",
                               getClientUID=[client_uid, None],
-                              title=data["Template"])
+                              title=data.get('Template'))
+
+        courier_uid = self.get_uid(["Courier", "ClientCourier"],
+                                   getParentUID=client_uid,
+                                   Title=data.get('Courier'))
 
         # Get the analyses from the temlate
         response = self.get(at_uid)
@@ -88,8 +98,9 @@ class SampleImporter(object):
         resolved_data.update({
             "Client": client_uid,
             "Contact": contact_uid,
-            "SampleType": st_uid,
+            "Courier": courier_uid,
             "DefaultContainerType": ct_uid,
+            "SampleType": st_uid,
             "Template": at_uid,
             "Analyses": analyses,
         })

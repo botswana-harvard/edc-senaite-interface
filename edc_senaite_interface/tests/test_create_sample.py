@@ -9,22 +9,23 @@ from ..models import SenaiteUser
 class TestSendMessage(TestCase):
 
     def setUp(self):
-        self.host = "https://senaite-server.bhp.org.bw/"
-        self.user = "ckgathi"
-        self.password = "thabo321"
-    
+        self.host = "https://lims-test.bhp.org.bw"
+        self.user = "testing"
+        self.password = "admin"
+
         SenaiteUser.objects.create(
-            username='ckgathi',
-            contact='Coulson CTK Thabo Kgathi',
-            password='thabo321')
-    
+            username='testing',
+            contact='Test Contact',
+            password='admin')
+
         self.data = {
-            "Client": "AZD1222",
-            "Contact": "Coulson CTK Thabo Kgathi",
-            "SampleType": "Serum",
+            "Client": "TESTING",
+            "Contact": "Test Contact",
+            "Courier": "Test Courier",
+            "SampleType": "Whole Blood EDTA",
             "DateSampled": datetime.now().strftime("%Y-%m-%d %H:%M"), # "2020-07-02 14:21:20",
-            "Template": "SARS-COV-2 Serology",
-            "DefaultContainerType": "Cryogenic Vial",
+            "Template": "HIV RNA PCR",
+            "DefaultContainerType": "EDTA tube",
             # Fields specific from BHP
             "ParticipantID": "12342342333",
             "ParticipantInitials": "CK",
@@ -34,7 +35,6 @@ class TestSendMessage(TestCase):
             "DateOfBirth": "1978-11-03",
             "Volume": "10mL",
         }
-
 
     def test_create_sample(self):
         """

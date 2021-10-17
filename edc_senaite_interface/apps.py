@@ -12,6 +12,7 @@ class AppConfig(DjangoAppConfig):
     admin_site_name = 'edc_senaite_interface_admin'
     client = None
     host = None
+    courier = None
     sample_type_match = None
     container_type_match = None
     template_match = None

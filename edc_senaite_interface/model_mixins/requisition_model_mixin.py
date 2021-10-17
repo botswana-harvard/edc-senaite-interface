@@ -23,6 +23,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         data.update(
             Client=app_config.client,
             Contact=self.contact,
+            Courier=app_config.courier,
             SampleType=self.sample_type,
             DateSampled=self.drawn_datetime.strftime("%Y-%m-%d %H:%M"),
             Template=self.template,
