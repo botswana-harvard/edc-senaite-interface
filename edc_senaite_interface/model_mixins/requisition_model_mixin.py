@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from django.db import models
+from django.db.models import Q
 
 from ..classes import SampleImporter
 from ..exceptions import EdcSenaiteInterfaceError
@@ -81,18 +82,20 @@ class SenaiteRequisitionModelMixin(models.Model):
         """Returns a senaite username.
         """
         try:
-            SenaiteUser.objects.get(username=self.user_created)
+            senaite_user = SenaiteUser.objects.get(
+                Q(username=self.user_created) | Q(username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
-            return self.user_created
+            return senaite_user.username
 
     @property
     def senaite_password(self):
-        """Return a senate password.
+        """Return a senaite password.
         """
         try:
-            senaite_user = SenaiteUser.objects.get(username=self.user_created)
+            senaite_user = SenaiteUser.objects.get(
+                Q(username=self.user_created) | Q(username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
@@ -112,7 +115,8 @@ class SenaiteRequisitionModelMixin(models.Model):
         """Return the LIS contact. Override to return the matching value on the LIS.
         """
         try:
-            senaite_user = SenaiteUser.objects.get(username=self.user_created)
+            senaite_user = SenaiteUser.objects.get(
+                Q(username=self.user_created) | Q(username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             raise EdcSenaiteInterfaceError(
                 f'Senaite user infor for {self.user_created} does not exist.')
