@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from edc_constants.constants import YES
 
 
 app_config = django_apps.get_app_config('edc_senaite_interface')
@@ -33,7 +34,7 @@ def senaite_sample_create_on_post_save(
 
 
 def create_new_senaite_sample(instance=None):
-    if getattr(instance, 'is_drawn', None):
+    if getattr(instance, 'is_drawn', None) == YES:
         try:
             resp = instance.save_senaite_sample()
         except AttributeError as e:
