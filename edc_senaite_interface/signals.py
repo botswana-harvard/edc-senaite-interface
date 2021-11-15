@@ -1,8 +1,9 @@
+from django.apps import apps as django_apps
+from django.contrib import messages
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from django.apps import apps as django_apps
 
 app_config = django_apps.get_app_config('edc_senaite_interface')
 
@@ -32,14 +33,18 @@ def senaite_sample_create_on_post_save(
 
 
 def create_new_senaite_sample(instance=None):
-    try:
-        resp = instance.save_senaite_sample()
-    except AttributeError as e:
-        if 'save_senaite_sample' not in str(e):
-            raise
-    else:
-        resp_dict = resp.json()
-        sample_items = resp_dict.get('items', [])
-        sample_id = sample_items[0].get('id') if sample_items else None
-        instance.sample_id = sample_id
-        instance.save_base(raw=True)
+    if getattr(instance, 'is_drawn', None):
+        try:
+            resp = instance.save_senaite_sample()
+        except AttributeError as e:
+            if 'save_senaite_sample' not in str(e):
+                raise
+        else:
+            if resp:
+                resp_dict = resp.json()
+                sample_items = resp_dict.get('items', [])
+                sample_id = sample_items[0].get('id') if sample_items else None
+                instance.sample_id = sample_id
+                instance.save_base(raw=True)
+            else:
+                messages.add_message('Senaite sample not created.')
