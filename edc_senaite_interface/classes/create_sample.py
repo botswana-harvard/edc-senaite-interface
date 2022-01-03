@@ -69,7 +69,7 @@ class SampleImporter(object):
         # Get the uid of the Sample type
         st_uid = self.get_uid("SampleType",
                               catalog="bika_setup_catalog",
-                              Title=data.get('SampleType'))
+                              title=data.get('SampleType'))
 
         # Resolve the container type uid
         ct_uid = self.get_uid("ContainerType",
