@@ -3,7 +3,6 @@ from django.contrib import messages
 
 from ..models import SenaiteUser
 
-    
 class SenaiteRequisitionAdminMixin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
@@ -17,7 +16,7 @@ class SenaiteRequisitionAdminMixin(admin.ModelAdmin):
                 messages.add_message(
                     request, messages.SUCCESS, msg)
         super().save_model(request, obj, form, change)
-    
+
     # def get_form(self, request, obj=None, **kwargs):
         # try:
             # SenaiteUser.objects.get(username=self.user_created)
