@@ -1,5 +1,4 @@
 from django.apps import apps as django_apps
-from django.contrib import messages
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -48,4 +47,4 @@ def create_new_senaite_sample(instance=None):
                 instance.sample_id = sample_id
                 instance.save_base(raw=True)
             else:
-                messages.add_message('Senaite sample not created.')
+                return
