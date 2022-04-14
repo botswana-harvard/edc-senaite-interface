@@ -2,6 +2,7 @@ import requests
 from ..models import SenaiteUser
 from django.apps import apps as django_apps
 import json
+from edc_constants.constants import POS, NEG, IND
 
 app_config = django_apps.get_app_config('edc_senaite_interface')
 
@@ -94,7 +95,7 @@ class AnalysisResult(object):
         data = json.loads(r.text)
         return data.get("items")
 
-    def get_results(self):
+    def get_results(self, participant_id=None, visit_code=None):
         portal_type = 'AnalysisRequest'
         client_uid = self.get_uid("Client", Title='AZD1222')
         # search = 'AZD1222'
@@ -103,7 +104,7 @@ class AnalysisResult(object):
             'getClientUID': client_uid,
             'catalog': 'bika_catalog_analysisrequest_listing',
             'limit': 9999,
-            'getParticipantID': '150-040990805-8',
+            'getParticipantID': participant_id,
             'review_state': 'published'
         }
         items = self.search(query)
@@ -112,32 +113,29 @@ class AnalysisResult(object):
             url = f'analysisrequest/{sample_uid}'
             analyses_requests = self.get_items(url)
             for analyses_request in analyses_requests:
-                analyses = analyses_request['Analyses']
-                for analys in analyses:
-                    results = self.get_items(analys['api_url'])
-                    for result in results:
-                        if result['ShortTitle'] == 'SARS-CoV-2':
-                            analysis_result_options = result['ResultOptions']
-                            print(analysis_result_options)
-                            analysis_result = result['Result']
-                            result_mapping = self.result_mapping(
-                                analysis_result, analysis_result_options)
-                            print(result_mapping)
-        # client = self.resolve_api_slug(f'search?portal_type=AnalysisRequest&getClientUID={client_uid}')
-        # client = self.get_items(client)
-        return items
-
-    def result_mapping(self, result, result_options=None):
-        for option in result_options:
-            if option['ResultValue'] == result:
-                return option['ResultText']
+                if analyses_request.get('Visit') == visit_code:
+                    analyses = analyses_request['Analyses']
+                    for analys in analyses:
+                        results = self.get_items(analys['api_url'])
+                        for result in results:
+                            if result['ShortTitle'] == 'SARS-CoV-2':
+                                analysis_result = result['Result']
+                                result_mapping = self.result_mapping(
+                                    analysis_result)
+                                return result_mapping
         return None
 
-    def requistion_identifiers(self):
-        subject_identifiers = []
-        requisition_cls = django_apps.get_model(
-            'esr21_subject.subjectrequisition')
-        requisitions = requisition_cls.objects.filter(
-            panel__name='sars_cov2_pcr').values_list(
-            'subject_visit__subject_identifier', flat=True)
-        print(requisitions)
+    def result_mapping(self, result):
+        results_map = {'1': POS, '2': NEG, '3': IND}
+        if result:
+            return results_map.get(result)
+        return None
+
+#     def requistion_identifiers(self):
+#         subject_identifiers = []
+#         requisition_cls = django_apps.get_model(
+#             'esr21_subject.subjectrequisition')
+#         requisitions = requisition_cls.objects.filter(
+#             panel__name='sars_cov2_pcr').values_list(
+#             'subject_visit__subject_identifier', flat=True)
+#         print(requisitions)

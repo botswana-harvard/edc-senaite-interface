@@ -54,7 +54,7 @@ class TestSendMessage(TestCase):
         else:
             raise ValidationError('Cannot authenticate')
 
-    @tag('get_requsitions')
-    def test_get_requisitions(self):
-        analysis_request = AnalysisResult(host=self.host)
-        print(analysis_request.requistion_identifiers())
+#     @tag('get_requsitions')
+#     def test_get_requisitions(self):
+#         analysis_request = AnalysisResult(host=self.host)
+#         print(analysis_request.requistion_identifiers())
