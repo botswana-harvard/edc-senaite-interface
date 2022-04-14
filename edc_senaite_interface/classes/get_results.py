@@ -123,7 +123,7 @@ class AnalysisResult(object):
                                 result_mapping = self.result_mapping(
                                     analysis_result)
                                 return result_mapping
-        return items
+        return None
 
     def result_mapping(self, result):
         results_map = {'1': POS, '2': NEG, '3': IND}
