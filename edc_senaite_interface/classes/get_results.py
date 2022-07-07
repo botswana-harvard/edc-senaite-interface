@@ -95,35 +95,40 @@ class AnalysisResult(object):
         data = json.loads(r.text)
         return data.get("items")
 
-    def get_results(self, participant_id=None, visit_code=None):
+    def get_pcr_results(self, template_name='SARS COV 2 PCR'):
         portal_type = 'AnalysisRequest'
-        client_uid = self.get_uid("Client", Title='AZD1222')
-        # search = 'AZD1222'
+        client_uid = self.get_uid('Client', Title='AZD1222')
+        results = []
+
         query = {
             'portal_type': portal_type,
             'getClientUID': client_uid,
-            'catalog': 'bika_catalog_analysisrequest_listing',
+            'complete': True,
             'limit': 9999,
-            'getParticipantID': participant_id,
-            'review_state': 'published'
+            'review_state': 'published',
+            'catalog': 'bika_catalog_analysisrequest_listing',
         }
         items = self.search(query)
+        items = [sample for sample in items if sample.get('TemplateTitle') == template_name]
+
         for item in items:
-            sample_uid = item['uid']
-            url = f'analysisrequest/{sample_uid}'
-            analyses_requests = self.get_items(url)
-            for analyses_request in analyses_requests:
-                if analyses_request.get('Visit') == visit_code:
-                    analyses = analyses_request['Analyses']
-                    for analys in analyses:
-                        results = self.get_items(analys['api_url'])
-                        for result in results:
-                            if result['ShortTitle'] == 'SARS-CoV-2':
-                                analysis_result = result['Result']
-                                result_mapping = self.result_mapping(
-                                    analysis_result)
-                                return result_mapping
-        return None
+            results_dict = {}
+            subject_identifier = item.get('getParticipantID')
+            subject_visit = item.get('getVisit').split('.')
+            visit_code = subject_visit[0]
+            visit_code_sequence = 0
+            if len(subject_visit) > 1:
+                visit_code_sequence = subject_visit[1]
+            results_dict.update(subject_identifier=subject_identifier,
+                                visit_code=visit_code,
+                                visit_code_sequence=visit_code_sequence)
+            if item.get('Analyses'):
+                analyses = self.get_items(item.get('Analyses')[0].get('api_url'))
+                if analyses:
+                    result = self.result_mapping(analyses[0].get('Result'))
+                    results_dict.update(covid_result=result)
+            results.append(results_dict)
+        return results
 
     def result_mapping(self, result):
         results_map = {'1': POS, '2': NEG, '3': IND}
