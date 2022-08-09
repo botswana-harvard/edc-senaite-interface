@@ -16,6 +16,7 @@ class SenaiteUserAdmin(ModelAdminMixin, admin.ModelAdmin):
         (None, {
             'fields': (
                 'username',
+                'related_username',
                 'password')}),
         audit_fieldset_tuple
     )
