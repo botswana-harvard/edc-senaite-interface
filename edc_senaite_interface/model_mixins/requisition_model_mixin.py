@@ -36,7 +36,9 @@ class SenaiteRequisitionModelMixin(models.Model):
             Visit=self.visit_code,
             VisitCode=self.visit_code,
             DateOfBirth=self.dob.strftime("%Y-%m-%d"),
-            Volume=float(self.estimated_volume))
+            Volume=str(self.estimated_volume),
+            Remarks=self.remarks,
+            Priority=self.senaite_priority)
         return data
 
     def save_senaite_sample(self, method='create'):
@@ -83,7 +85,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
@@ -95,7 +97,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
@@ -116,7 +118,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             raise EdcSenaiteInterfaceError(
                 f'Senaite user infor for {self.user_created} does not exist.')
@@ -138,6 +140,22 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         return app_config.container_type_match.get(
             self.panel.name, None)
+
+    @property
+    def remarks(self):
+        prev_req = self.history.latest().prev_record
+        if prev_req:
+            return None if self.comments in self.history.exclude(
+                history_id=prev_req.history_id).values_list(
+                    'comments', flat=True) else self.comments
+        return self.comments
+
+    @property
+    def senaite_priority(self):
+        """Default to normal, maps to '3' for routine on LIS. Override per
+        project to set priority mapping.
+        """
+        return '3'
 
     class Meta:
         abstract = True

@@ -3,6 +3,7 @@ from django.contrib import messages
 
 from ..models import SenaiteUser
 
+
 class SenaiteRequisitionAdminMixin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
