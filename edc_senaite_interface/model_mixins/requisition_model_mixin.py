@@ -85,7 +85,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
@@ -97,7 +97,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             pass
         else:
@@ -118,7 +118,7 @@ class SenaiteRequisitionModelMixin(models.Model):
         """
         try:
             senaite_user = SenaiteUser.objects.get(
-                Q(username=self.user_created) | Q(username=self.user_modified))
+                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
         except SenaiteUser.DoesNotExist:
             raise EdcSenaiteInterfaceError(
                 f'Senaite user infor for {self.user_created} does not exist.')
