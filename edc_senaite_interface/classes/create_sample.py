@@ -26,9 +26,9 @@ class SampleImporter(object):
         if items:
             id = items[0].get("id")
             print(f"Object created: {id}")
-            print(f'Transition sample {id} to Lab....')
-            transition_data = {'transition': 'send_to_lab'}
-            self.update_sample(identifier=id, data=transition_data)
+#             print(f'Transition sample {id} to Lab....')
+#             transition_data = {'transition': 'send_to_lab'}
+#             self.update_sample(identifier=id, data=transition_data)
             print(f'Sample {id} successfully sent to lab')
 
         print("Total requests: {self._number_of_requests}")
