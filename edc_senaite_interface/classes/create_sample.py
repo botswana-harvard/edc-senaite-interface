@@ -1,5 +1,7 @@
+import pytz
 import requests
 import json
+from datetime import datetime
 
 from django.apps import apps as django_apps
 
@@ -43,6 +45,8 @@ class SampleImporter(object):
             exclude = ['Client', 'SampleType', 'Template']
             for value in exclude:
                 values.pop(value)
+        sampled_dt = datetime.strptime(values.get('DateSampled'), "%Y-%m-%d %H:%M")
+        values.update({'DateSampled':  sampled_dt.astimezone(pytz.UTC)})
 
         sample_uid = self.get_uid("AnalysisRequest", id=identifier)
         slug = f'AnalysisRequest/update/{sample_uid}'
