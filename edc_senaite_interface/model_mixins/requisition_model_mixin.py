@@ -1,6 +1,8 @@
 from django.apps import apps as django_apps
 from django.db import models
 from django.db.models import Q
+from edc_constants.constants import NO
+from edc_constants.choices import YES_NO
 
 from ..classes import SampleImporter
 from ..exceptions import EdcSenaiteInterfaceError
@@ -16,7 +18,14 @@ class SenaiteRequisitionModelMixin(models.Model):
 
     sample_id = models.CharField(
         verbose_name="LIS generated Sample Identifier",
-        max_length=50)
+        max_length=50,
+        blank=True)
+
+    exists_on_lis = models.CharField(
+        verbose_name='Already exists on LIS?',
+        max_length=3,
+        choices=YES_NO,
+        default=NO)
 
     @property
     def data(self):
