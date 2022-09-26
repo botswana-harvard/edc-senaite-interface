@@ -1,1 +1,2 @@
+from .requisition_form_validator_mixin import RequisitionFormValidatorMixin as SenaiteRequisitionFormValidatorMixin
 from .senaite_user_form import SenaiteUserForm
