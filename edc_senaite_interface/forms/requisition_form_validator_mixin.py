@@ -33,7 +33,7 @@ class RequisitionFormValidatorMixin:
         panel = self.cleaned_data.get('panel')
         panel_name = panel.name if panel else None
         connection = SampleImporter(host=app_config.host)
-        if self.authenticate_user(connection):
+        if self.authenticate_user(connection) and sample_id:
             # Get the sample type code for the client of the Sample
             client = self.search(
                 connection, portal_type='Client', Title=app_config.client, complete=True)
