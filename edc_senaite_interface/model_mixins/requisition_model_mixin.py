@@ -92,25 +92,27 @@ class SenaiteRequisitionModelMixin(models.Model):
     def senaite_username(self):
         """Returns a senaite username.
         """
-        try:
-            senaite_user = SenaiteUser.objects.get(
-                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
-        except SenaiteUser.DoesNotExist:
-            pass
-        else:
-            return senaite_user.username
+        return getattr(self.senaite_user, 'username', None)
 
     @property
     def senaite_password(self):
         """Return a senaite password.
         """
+        return getattr(self.senaite_user, 'password', None)
+
+    @property
+    def senaite_user(self):
         try:
-            senaite_user = SenaiteUser.objects.get(
-                Q(related_username=self.user_created) | Q(related_username=self.user_modified))
+            senaite_user = SenaiteUser.objects.get(related_username=self.user_created)
         except SenaiteUser.DoesNotExist:
-            pass
+            try:
+                senaite_user = SenaiteUser.objects.get(related_username=self.user_modified)
+            except SenaiteUser.DoesNotExist:
+                pass
+            else:
+                return senaite_user
         else:
-            return senaite_user.password
+            return senaite_user
 
     @property
     def sample_type(self):
