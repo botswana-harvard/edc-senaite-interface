@@ -18,12 +18,7 @@ class SenaiteRequisitionAdminMixin(admin.ModelAdmin):
                     request, messages.SUCCESS, msg)
         super().save_model(request, obj, form, change)
 
-    # def get_form(self, request, obj=None, **kwargs):
-        # try:
-            # SenaiteUser.objects.get(username=self.user_created)
-        # except SenaiteUser.DoesNotExist:
-            # msg = (f'Senaite user infor for {self.user_created}. '
-                   # 'Sample not created on the LIS')
-            # messages.add_message(
-                # self.request, messages.SUCCESS, msg)
-        # return super().get_form(request, obj, **kwargs)
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
