@@ -30,6 +30,7 @@ def senaite_sample_create_on_post_save(
 
 
 def create_new_senaite_sample(instance=None):
+    # TODO: don't just raise catch exceptions
     if getattr(instance, 'is_drawn', None) == YES:
         try:
             resp = instance.save_senaite_sample()
