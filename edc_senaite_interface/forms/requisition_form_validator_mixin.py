@@ -106,7 +106,6 @@ class RequisitionFormValidatorMixin:
                 authenticated = connection.auth(
                     senaite_user.username, senaite_user.password)
             except ConnectionError:
-                import pdb; pdb.set_trace()
                 if self.cleaned_data.get('exists_on_lis') == YES:
                     raise ValidationError('Failed to connect to the LIS')
                 pass
