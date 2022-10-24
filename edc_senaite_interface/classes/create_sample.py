@@ -138,12 +138,16 @@ class SampleImporter(object):
 
     def get(self, url, payload=None):
         url = self.resolve_api_slug(url)
-        response = self.session.get(url, params=payload)
-        print(f'{response.url}')
-        self._number_of_requests += 1
-        if response.status_code != 200:
-            print(f'{response.status_code}')
-        return response
+        try:
+            response = self.session.get(url, params=payload)
+        except requests.ConnectionError:
+            raise
+        else:
+            print(f'{response.url}')
+            self._number_of_requests += 1
+            if response.status_code != 200:
+                print(f'{response.status_code}')
+            return response
 
     def post(self, url, payload):
         url = self.resolve_api_slug(url)

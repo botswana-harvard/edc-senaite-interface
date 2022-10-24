@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
 from edc_form_validators import FormValidator
 from edc_constants.constants import YES
+from requests import ConnectionError
 
 from ..classes import SampleImporter
 from ..models import SenaiteUser
@@ -101,4 +102,12 @@ class RequisitionFormValidatorMixin:
         except SenaiteUser.DoesNotExist:
             raise ValidationError('Senaite user does not exist.')
         else:
-            return connection.auth(senaite_user.username, senaite_user.password)
+            try:
+                authenticated = connection.auth(
+                    senaite_user.username, senaite_user.password)
+            except ConnectionError:
+                if self.cleaned_data.get('exists_on_lis') == YES:
+                    raise ValidationError('Failed to connect to the LIS')
+                pass
+            else:
+                return authenticated
