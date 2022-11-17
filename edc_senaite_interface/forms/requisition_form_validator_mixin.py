@@ -1,3 +1,4 @@
+import pytz
 import re
 from datetime import datetime
 from django.apps import apps as django_apps
@@ -72,6 +73,7 @@ class RequisitionFormValidatorMixin:
             lis_date_sampled = datetime.strptime(
                 ''.join(ar[0].get('getDateSampled').rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
             lis_date_sampled = lis_date_sampled.replace(tzinfo=None)
+            drawn_datetime = drawn_datetime.astimezone(pytz.UTC)
             date_sampled = lis_date_sampled == drawn_datetime.replace(tzinfo=None, second=0)
             if not all([pid, visit_code, date_sampled]):
                 raise ValidationError(
