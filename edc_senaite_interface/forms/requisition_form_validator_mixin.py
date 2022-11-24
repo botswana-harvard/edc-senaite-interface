@@ -1,4 +1,3 @@
-import pytz
 import re
 from datetime import datetime
 from django.apps import apps as django_apps
@@ -72,9 +71,9 @@ class RequisitionFormValidatorMixin:
             visit_code = ar[0].get('VisitCode') == self.visit_obj.visit_code
             lis_date_sampled = datetime.strptime(
                 ''.join(ar[0].get('getDateSampled').rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
-            lis_date_sampled = lis_date_sampled.replace(tzinfo=None)
-            drawn_datetime = drawn_datetime.astimezone(pytz.UTC)
-            date_sampled = lis_date_sampled == drawn_datetime.replace(tzinfo=None, second=0)
+            lis_date_sampled = lis_date_sampled.date()
+            drawn_datetime = drawn_datetime.date()
+            date_sampled = lis_date_sampled == drawn_datetime
             if not all([pid, visit_code, date_sampled]):
                 raise ValidationError(
                     'Please check the Participant ID, visit code and/or date '
