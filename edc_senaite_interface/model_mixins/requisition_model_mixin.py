@@ -1,11 +1,10 @@
 from django.apps import apps as django_apps
 from django.db import models
-from django.db.models import Q
 from edc_constants.constants import NO
 from edc_constants.choices import YES_NO
+from requests import ConnectionError
 
 from ..classes import SampleImporter
-from ..exceptions import EdcSenaiteInterfaceError
 from ..models import SenaiteUser
 
 app_config = django_apps.get_app_config('edc_senaite_interface')
@@ -52,14 +51,16 @@ class SenaiteRequisitionModelMixin(models.Model):
 
     def save_senaite_sample(self, method='create'):
         importer = SampleImporter(host=app_config.host)
-        if importer.auth(self.senaite_username, self.senaite_password):
-            if method == 'create':
+        try:
+            authenticated = importer.auth(self.senaite_username, self.senaite_password)
+        except ConnectionError:
+            print("Cannot authenticate")
+        else:
+            if authenticated and method == 'create':
                 return importer.create_sample(data=self.data)
-            elif method == 'update':
+            elif authenticated and method == 'update':
                 sample_id = self.sample_id
                 return importer.update_sample(identifier=sample_id, data=self.data)
-        else:
-            print("Cannot authenticate")
 
     @property
     def consent_obj(self):

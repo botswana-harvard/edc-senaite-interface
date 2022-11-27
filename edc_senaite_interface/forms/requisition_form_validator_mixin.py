@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
 from edc_form_validators import FormValidator
 from edc_constants.constants import YES
+from requests import ConnectionError
 
 from ..classes import SampleImporter
 from ..models import SenaiteUser
@@ -70,8 +71,9 @@ class RequisitionFormValidatorMixin:
             visit_code = ar[0].get('VisitCode') == self.visit_obj.visit_code
             lis_date_sampled = datetime.strptime(
                 ''.join(ar[0].get('getDateSampled').rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
-            lis_date_sampled = lis_date_sampled.replace(tzinfo=None)
-            date_sampled = lis_date_sampled == drawn_datetime.replace(tzinfo=None, second=0)
+            lis_date_sampled = lis_date_sampled.date()
+            drawn_datetime = drawn_datetime.date()
+            date_sampled = lis_date_sampled == drawn_datetime
             if not all([pid, visit_code, date_sampled]):
                 raise ValidationError(
                     'Please check the Participant ID, visit code and/or date '
@@ -101,4 +103,12 @@ class RequisitionFormValidatorMixin:
         except SenaiteUser.DoesNotExist:
             raise ValidationError('Senaite user does not exist.')
         else:
-            return connection.auth(senaite_user.username, senaite_user.password)
+            try:
+                authenticated = connection.auth(
+                    senaite_user.username, senaite_user.password)
+            except ConnectionError:
+                if self.cleaned_data.get('exists_on_lis') == YES:
+                    raise ValidationError('Failed to connect to the LIS')
+                pass
+            else:
+                return authenticated
