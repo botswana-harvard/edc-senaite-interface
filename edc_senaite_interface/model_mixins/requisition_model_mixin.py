@@ -41,7 +41,7 @@ class SenaiteRequisitionModelMixin(models.Model):
             ParticipantInitials=self.initials,
             ClientSampleID=self.requisition_identifier,
             Gender=self.gender.lower(),
-            Visit=self.visit_code,
+            Visit=self.visit_code_merge,
             VisitCode=self.visit_code,
             DateOfBirth=self.dob.strftime("%Y-%m-%d"),
             Volume=str(self.estimated_volume),
@@ -86,8 +86,8 @@ class SenaiteRequisitionModelMixin(models.Model):
         return getattr(self, self.visit_model_attr)
 
     @property
-    def visit_code(self):
-        return self.visit.visit_code
+    def visit_code_merge(self):
+        return f'{self.visit.visit_code}.{self.visit.visit_code_sequence}'
 
     @property
     def senaite_username(self):
