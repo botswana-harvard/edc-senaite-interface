@@ -8,14 +8,18 @@ class SenaiteRequisitionAdminMixin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if not change:
-            user_created = obj.user_created or request.user.username
+            username = getattr(obj, 'user_created', None)
             try:
-                SenaiteUser.objects.get(username=user_created)
+                SenaiteUser.objects.get(related_username=username)
             except SenaiteUser.DoesNotExist:
-                msg = (f'Senaite user infor for {user_created}. '
-                       'Sample not created on the LIS')
-                messages.add_message(
-                    request, messages.SUCCESS, msg)
+                username = request.user.username if getattr(request, 'user', None) else None
+                try:
+                    SenaiteUser.objects.get(related_username=username)
+                except SenaiteUser.DoesNotExist:
+                    msg = (f'Senaite user account for {username} does not exist.'
+                           'Sample not created on the LIS')
+                    messages.add_message(
+                        request, messages.ERROR, msg)
         super().save_model(request, obj, form, change)
 
     def get_form(self, request, obj=None, **kwargs):
