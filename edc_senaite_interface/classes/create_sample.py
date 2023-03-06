@@ -24,6 +24,7 @@ class SampleImporter(object):
         slug = "AnalysisRequest/create/{}".format(client_uid)
         response = self.post(slug, values)
         result = json.loads(response.text)
+
         items = result.get("items")
         if items:
             id = items[0].get("id")
@@ -71,9 +72,10 @@ class SampleImporter(object):
                                    getFullname=data.get('Contact'))
 
         # Get the uid of the Sample type
+        sample_type = data.get('SampleType')
         st_uid = self.get_uid("SampleType",
                               catalog="bika_setup_catalog",
-                              title=data.get('SampleType'))
+                              conditional={'title': sample_type, 'Title': sample_type})
 
         # Resolve the container type uid
         ct_uid = self.get_uid("ContainerType",
@@ -111,12 +113,25 @@ class SampleImporter(object):
         return resolved_data
 
     def get_uid(self, portal_type, **kwargs):
+        items = None
         query = {
             "portal_type": portal_type
         }
+
         if kwargs:
+            conditional = kwargs.pop('conditional', {})
             query.update(**kwargs)
-        items = self.search(query)
+
+            if not conditional:
+                items = self.search(query)
+
+            for key, value in conditional.items():
+                query.update({f'{key}': value})
+
+                items = self.search(query)
+                if items:
+                    break
+                query.pop(key)
         if not items:
             print("No object found")
             return None
