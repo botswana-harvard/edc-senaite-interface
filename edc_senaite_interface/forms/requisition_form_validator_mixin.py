@@ -69,12 +69,12 @@ class RequisitionFormValidatorMixin:
         if ar:
             visit_code_sequence = self.visit_obj.visit_code_sequence
             visit_code = False
-            pid = ar[0].get('getParticipantID') == self.subject_identifier
+            pid = ar[0].get('getParticipantID').strip() == self.subject_identifier
             visit = ar[0].get('Visit', '').split('.')
             if len(visit) > 1:
-                visit_code = (visit[0] == self.visit_obj.visit_code and int(visit[1]) == visit_code_sequence)
+                visit_code = (visit[0].strip() == self.visit_obj.visit_code and int(visit[1]) == visit_code_sequence)
             else:
-                visit_code = visit[0] == self.visit_obj.visit_code
+                visit_code = visit[0].strip() == self.visit_obj.visit_code
             lis_date_sampled = datetime.strptime(
                 ''.join(ar[0].get('getDateSampled').rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
             lis_date_sampled = lis_date_sampled.date()
