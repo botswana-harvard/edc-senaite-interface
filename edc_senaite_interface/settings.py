@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'edc_dashboard.middleware.DashboardMiddleware',
 ]
 
 ROOT_URLCONF = 'edc_senaite_interface.urls'
@@ -114,18 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# dashboards
-DASHBOARD_URL_NAMES = {
-
-}
-
-LAB_DASHBOARD_URL_NAMES = {}
-
-DASHBOARD_BASE_TEMPLATES = {
-
-}
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -151,3 +140,12 @@ DEVICE_ID = '99'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DASHBOARD_URL_NAMES = {
+    'senaite_result_listboard_url': 'edc_senaite_interface:senaite_result_listboard_url',
+}
+
+DASHBOARD_BASE_TEMPLATES = {
+    'senaite_result_listboard_template': 'edc_senaite_interface/listboard.html',
+}
+

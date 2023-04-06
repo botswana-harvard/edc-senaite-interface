@@ -1,1 +1,2 @@
 from .requisition_model_mixin import SenaiteRequisitionModelMixin
+from .result_model_mixin import SenaiteResultModelMixin, SenaiteResultValueMixin

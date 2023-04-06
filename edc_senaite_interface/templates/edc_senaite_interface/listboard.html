@@ -1,0 +1,106 @@
+{% extends listboard_base_template %}
+{% load admin_urls %}
+{% load edc_base_extras %}
+<!-- Dashboard extras -->
+{% load edc_dashboard_extras %}
+{% load static %}
+
+{% block extra-css %}
+{{ block.super }}
+	<link href="{% static 'edc_senaite_interface/css/listboard.css' %}"rel=stylesheet>
+	<link href="{% static 'edc_senaite_interface/css/bootstrap/bootstrap-table.min.css' %}"rel=stylesheet>
+{% endblock extra-css %}
+
+
+{% block extra-scripts %}
+{{ block.super }}
+	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table.min.js' %}"></script>
+	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+<!-- start listboard main block-->
+
+<!-- Filter pills -->
+{% if listboard_view_filters %}
+  <ul class="nav nav-pills nav-justified" id='filters'>
+    {% for listboard_filter in listboard_view_filters %}
+	    <li class="{% if f == listboard_filter.name or e == listboard_filter.name %} active {% endif %}">
+	    	<a href="{% url listboard_filter_url %}?request_type={{ request_type }}&{{ listboard_filter.querystring }}">
+	    		{{ listboard_filter.label }}{% if f == listboard_filter.name or e == listboard_filter.name %}&nbsp;<i class="fa fa-check fa-fw"></i>{% endif %}
+	    	</a>
+	    </li>
+    {% endfor %}
+  </ul>
+ {% endif %}
+
+<!-- begin table -->
+<div class="table table-responsive">
+<table 	class="table table-hover table-striped small"
+		data-toggle="table"
+		data-toolbar="#toolbar"
+		data-toolbar-align="left"
+		data-filter-control="true"
+		data-show-columns="true"
+		data-show-refresh="true"
+  		data-show-columns-toggle-all="true"
+		data-show-fullscreen="true"
+		data-pagination="true"
+ >
+<thead style="background-color:#F0F8FF">
+
+{% block listboard_table_header %}
+     <!-- begin results header -->
+    <th width="100%"></th>
+    <th data-field='sample_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample ID</th>
+    <th data-field='date_sampled' data-sortable='true'>Date Sampled</th>
+    <th data-field='sample_status' data-sortable='true' data-width="200" data-filter-control="select">Sample State</th>
+    <th data-field='is_partition' data-sortable='true' data-filter-control="select">Primary Sample</th>
+    <!-- end results header -->
+{% endblock listboard_table_header %}
+
+</thead><tbody>
+
+{% block listboard_table_body %}
+
+    {% for result in results %}
+        <tr>
+        {% block listboard_table_button_column %}
+            <td "style="white-space: nowrap">
+			    <div class="btn-group">
+			    </div>
+			   </td>
+        {% endblock listboard_table_button_column %}
+
+        {% block listboard_table_columns %}
+            <td nowrap>{{result.sample_id}}</td>
+		    <td nowrap>{{result.sample_status}}</td>
+		    <td nowrap>{{result.is_partition}}</td>
+		    <td nowrap></td>
+        {% endblock listboard_table_columns %}
+        </tr>
+    {% endfor %}
+
+{% endblock listboard_table_body %}
+
+</tbody>
+</table>
+
+<!-- begin spacer rows -->
+<table>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+</table>
+<!-- end spacer rows -->
+
+</div><!-- end table -->
+
+{% paginator_row %}
+
+</div>  <!--end panel -->
+</div> <!--end panel-group -->
+<!-- end listboard main block -->
+{% endblock main %}
