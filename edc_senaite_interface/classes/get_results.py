@@ -130,6 +130,7 @@ class AnalysisResult(APIResolversMixin):
 
         if model_obj and getattr(model_obj, 'sample_status', '') == 'resulted':
             self.create_result_items(result=model_obj, data=sample_details)
+            self.download_results_file(obj=model_obj, data=sample_details)
 
         if not partitions:
             partitions = sample_details.get('getDescendantsUIDs', [])
@@ -157,6 +158,26 @@ class AnalysisResult(APIResolversMixin):
         """
         items = self.get_items(url=parent_ar.get('api_url', ''))
         return items[0].get('id') if items else None
+
+    def download_results_file(self, obj=None, data={}):
+        """ Retrieve url for the published results file, and download the content
+            to upload to the result instance.
+            @param obj: result instance
+            @param data: sample details
+        """
+        sample_uid = data.get('uid', '')
+        query = {'portal_type': 'ARReport',
+                 'sample_uid': sample_uid,
+                 'complete': 1}
+        items = self.search(query)
+        if items:
+            items = items[0]
+            file_details = items.get('Pdf')
+            file_url = file_details.get('download', '')
+            response = self.get(file_url)
+            if response and obj:
+                filename = f'{obj.sample_id}_results.pdf'
+                obj.upload_results_doc(content=response.content, filename=filename)
 
     def get_pcr_results(self, template_name='SARS COV 2 PCR'):
         portal_type = 'AnalysisRequest'

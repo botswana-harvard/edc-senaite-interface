@@ -12,7 +12,7 @@ class ResultModelWrapperMixin:
         """
         try:
             return self.result_model_cls.objects.get(
-                **self.purchase_order_options)
+                **self.senaite_result_options)
         except ObjectDoesNotExist:
             return None
 
@@ -51,3 +51,12 @@ class ResultModelWrapperMixin:
         if self.result_model_obj:
             return self.result_model_obj.parent_id
         return None
+
+    @property
+    def requisition_id(self):
+        if self.result_model_obj:
+            model_obj = getattr(self.result_model_obj, 'requisition_obj', None)
+            if not model_obj:
+                model_obj = getattr(self.result_model_obj, 'primary_requisition', None)
+            return getattr(model_obj, 'requisition_identifier', '')
+        return ''

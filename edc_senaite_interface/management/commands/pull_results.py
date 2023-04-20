@@ -27,7 +27,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        import pdb; pdb.set_trace()
         sids = options['sample_ids']
         result_models = getattr(app_config, 'result_models', {})
         if sids:

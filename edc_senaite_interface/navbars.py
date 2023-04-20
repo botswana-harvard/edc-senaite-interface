@@ -28,7 +28,7 @@ edc_senaite_interface.append_item(
         name='senaite_result',
         title='Senaite Result',
         label='Senaite Result',
-        fa_icon='fa fa-flask-alt',
+        fa_icon='fa fa-flask',
         url_name=settings.DASHBOARD_URL_NAMES.get('senaite_result_listboard_url'),
         no_url_namespace=no_url_namespace))
 

@@ -16,14 +16,53 @@
 {{ block.super }}
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table.min.js' %}"></script>
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
+	<script type="text/javascript">
+        function responseHandler(res) {
+            return {
+                total: res.total,
+                rows: res.rows
+            };
+        }
+    </script>
 {% endblock %}
 
 {% block main %}
 <!-- start listboard main block-->
 
-<!-- Filter pills -->
+<!-- Filter Cards -->
 {% if listboard_view_filters %}
-  <ul class="nav nav-pills nav-justified" id='filters'>
+	
+	<div class="col-md-4 col-xl-3">
+	    <div class="card bg-c-blue order-card">
+	        <div class="card-block">
+	            <h6 class="m-b-20">Pending Samples</h6>
+	            <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>{{pending|length}}</span></h2>
+	            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="col-md-4 col-xl-3">
+	    <div class="card bg-c-green order-card">
+	        <div class="card-block">
+	            <h6 class="m-b-20">Resulted Samples</h6>
+	            <h2 class="text-right"><i class="fa fa-flask f-left"></i><span>{{resulted|length}}</span></h2>
+	            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="col-md-4 col-xl-3">
+	    <div class="card bg-c-yellow order-card">
+	        <div class="card-block">
+	            <h6 class="m-b-20">Stored Samples</h6>
+	            <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>{{stored|length}}</span></h2>
+	            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+	        </div>
+	    </div>
+	</div>
+
+<!--   <ul class="nav nav-pills nav-justified" id='filters'>
     {% for listboard_filter in listboard_view_filters %}
 	    <li class="{% if f == listboard_filter.name or e == listboard_filter.name %} active {% endif %}">
 	    	<a href="{% url listboard_filter_url %}?request_type={{ request_type }}&{{ listboard_filter.querystring }}">
@@ -31,7 +70,7 @@
 	    	</a>
 	    </li>
     {% endfor %}
-  </ul>
+  </ul> -->
  {% endif %}
 
 <!-- begin table -->
@@ -45,17 +84,23 @@
 		data-show-refresh="true"
   		data-show-columns-toggle-all="true"
 		data-show-fullscreen="true"
+		data-url="{% url senaite_result_listboard_url 'all' %}"
 		data-pagination="true"
+		data-side-pagination="server"
+		data-page-list="[10, 25, 50, 100]"
+		data-page-size="10"
  >
-<thead style="background-color:#F0F8FF">
+<thead style="background-color:#F3F3F3">
 
 {% block listboard_table_header %}
      <!-- begin results header -->
-    <th width="100%"></th>
     <th data-field='sample_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample ID</th>
-    <th data-field='date_sampled' data-sortable='true'>Date Sampled</th>
-    <th data-field='sample_status' data-sortable='true' data-width="200" data-filter-control="select">Sample State</th>
-    <th data-field='is_partition' data-sortable='true' data-filter-control="select">Primary Sample</th>
+    <th data-field='sample_status' data-sortable='true' data-width="200" data-filter-control="select" data-align="center">Sample State</th>
+    <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
+    <th data-field='is_partition' data-sortable='true' data-filter-control="select" data-width="100" data-align="center">Primary Sample</th>
+    <th data-field='parent_id' data-sortable='true' data-filter-control="input" data-align="center">Parent ID</th>
+    <th data-field='requisition_id' data-sortable='true' data-filter-control="input" data-align="center">Requisition ID</th>
+    <th data-field='view_results' data-align="right"></th>
     <!-- end results header -->
 {% endblock listboard_table_header %}
 
@@ -65,18 +110,29 @@
 
     {% for result in results %}
         <tr>
-        {% block listboard_table_button_column %}
-            <td "style="white-space: nowrap">
-			    <div class="btn-group">
-			    </div>
-			   </td>
-        {% endblock listboard_table_button_column %}
-
         {% block listboard_table_columns %}
             <td nowrap>{{result.sample_id}}</td>
-		    <td nowrap>{{result.sample_status}}</td>
-		    <td nowrap>{{result.is_partition}}</td>
-		    <td nowrap></td>
+		    <td nowrap>{{result.sample_status|title}}</td>
+		    <td nowrap>{{result.date_stored}}</td>
+		    <td nowrap>{{result.is_partition|yesno:"No, Yes"}}</td>
+		    <td nowrap>{{result.parent_id}}</td>
+		    <td nowrap>{{result.requisition_id}}</td>
+		    <td nowrap>
+		    	<div class="btn-group btn-group-sm">
+		    		<a {% if result.sample_status == 'resulted' %}
+		    				href="{{ result.sample_results_file }}"
+		    			{% else %}
+		    				href="{{ result.storage_location }}"
+		    			{% endif %}
+		    			class="btn btn-outline-secondary">
+		    		{% if result.sample_status == 'resulted' %}
+		    			<i class="fa fa-eye"></i> View Results
+		    		{% else %}
+		    			<i class="fa fa-vials"></i> View in Storage
+		    		{% endif %}
+		    		</a>
+        		</div>
+		    </td>
         {% endblock listboard_table_columns %}
         </tr>
     {% endfor %}
@@ -86,19 +142,8 @@
 </tbody>
 </table>
 
-<!-- begin spacer rows -->
-<table>
-<tr><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td></tr>
-</table>
-<!-- end spacer rows -->
-
 </div><!-- end table -->
 
-{% paginator_row %}
 
 </div>  <!--end panel -->
 </div> <!--end panel-group -->

@@ -1,4 +1,6 @@
+import os
 from django.apps import apps as django_apps
+from django.core.files import File
 from django.db import models
 from edc_base.model_validators.date import datetime_not_future
 from edc_base.utils import get_utcnow
@@ -49,6 +51,9 @@ class SenaiteResultModelMixin(models.Model):
 
     date_stored = models.DateField(null=True)
 
+    # Results doc link
+    sample_results_file = models.FileField(null=True, upload_to='senaite_results/')
+
     @property
     def requisition_model_cls(self):
         return django_apps.get_model(self.requisition_model)
@@ -71,6 +76,21 @@ class SenaiteResultModelMixin(models.Model):
             return None
         else:
             return model_obj
+
+    def upload_results_doc(self, content='', filename=''):
+        """ Uploads the results file document generated on the LIS when a sample
+            has been published.
+            @param content: downloaded pdf response content
+            @param filename: name to save file with
+            @return: boolean value True once uploading completes
+        """
+        with File(open(f'temp_{filename}', 'w+b')) as results_file:
+            results_file.write(content)
+
+            self.sample_results_file.save(filename, results_file)
+
+        os.remove(results_file.name)
+        return True
 
     def __str__(self):
         return f'{self.sample_id}, status: {self.sample_status}'
