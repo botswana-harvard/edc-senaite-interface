@@ -8,7 +8,7 @@ from ..model_mixins.result_model_mixin import SenaiteResultModelMixin, SenaiteRe
 
 class SenaiteResult(SenaiteResultModelMixin, SiteModelMixin, BaseUuidModel):
 
-    requisition_model = 'flourish_caregiver.caregiverrequisition'
+    requisition_model = None
 
     history = HistoricalRecords()
 

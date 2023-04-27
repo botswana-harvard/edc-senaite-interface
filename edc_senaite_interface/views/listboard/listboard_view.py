@@ -50,11 +50,13 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                 'total': paginator.count,
                 'rows': [{'id': obj.id,
                           'sample_id': obj.sample_id,
+                          'participant_id': obj.participant_id,
                           'sample_status': obj.sample_status,
                           'date_stored': obj.date_stored,
                           'is_partition': obj.is_partition,
                           'parent_id': obj.parent_id,
-                          'requisition_id': obj.requisition_id} for obj in page_obj]}
+                          'requisition_id': obj.requisition_id,
+                          'view_results': self.action_button(model_obj=obj)} for obj in page_obj]}
             return JsonResponse(data)
         return super().get(request, *args, **kwargs)
 
@@ -80,3 +82,13 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     def stored(self):
         samples = self.get_queryset()
         return samples.filter(sample_status='stored')
+
+    def action_button(self, model_obj=None):
+        btn_div = '<div class="btn-group btn-group-sm">'
+        if model_obj.sample_status == 'resulted':
+            btn_div = btn_div + (f'<a href="{model_obj.sample_results_file}" class="btn '
+                                 'btn-outline-secondary"> <i class="fa fa-eye"></i> View Results </a>')
+        elif model_obj.sample_status == 'stored':
+            btn_div = btn_div + (f'<a href="{model_obj.storage_location}" class="btn '
+                                 'btn-outline-secondary"> <i class="fa fa-eye"></i> View in Storage </a>')
+        return btn_div + '</div>'

@@ -21,7 +21,8 @@ class SenaiteResultAdmin(ModelAdminMixin, admin.ModelAdmin):
                 'is_partition',
                 'parent_id',
                 'storage_location',
-                'date_stored')}),
+                'date_stored',
+                'sample_results_file')}),
         audit_fieldset_tuple
     )
 

@@ -54,9 +54,17 @@ class ResultModelWrapperMixin:
 
     @property
     def requisition_id(self):
+        return getattr(self.requisition_obj, 'requisition_identifier', '')
+
+    @property
+    def participant_id(self):
+        return getattr(self.requisition_obj, 'subject_identifier', '')
+
+    @property
+    def requisition_obj(self):
         if self.result_model_obj:
             model_obj = getattr(self.result_model_obj, 'requisition_obj', None)
             if not model_obj:
                 model_obj = getattr(self.result_model_obj, 'primary_requisition', None)
-            return getattr(model_obj, 'requisition_identifier', '')
-        return ''
+            return model_obj
+        return {}
