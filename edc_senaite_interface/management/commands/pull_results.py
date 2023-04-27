@@ -2,7 +2,7 @@ import configparser
 
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from requests import ConnectionError
 
 from ...classes import AnalysisResult
@@ -20,6 +20,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--app_label',
+            dest='app_label',
+            help='Restricts pulling the results to the specified app_label',
+        )
+        parser.add_argument(
             '--sample_ids',
             dest='sample_ids',
             help=('Only pull results for given sample identifiers. Accepts a '
@@ -28,12 +33,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sids = options['sample_ids']
-        result_models = getattr(app_config, 'result_models', {})
-        if sids:
-            sample_ids = [sid.strip() for sid in sids.split(',')]
+        app_label = options['app_label']
+        if not app_label:
+            raise CommandError("Please specify the app_label to pull results for.")
         else:
-            sample_ids = []
-        for app_label, models in result_models.items():
+            result_models = getattr(app_config, 'result_models', {})
+            if sids:
+                sample_ids = [sid.strip() for sid in sids.split(',')]
+            else:
+                sample_ids = []
+            models = result_models.get(app_label)
+
             result_model = f'{app_label}.{models[0]}'
             result_value_model = f'{app_label}.{models[1]}'
             for sid in sample_ids:

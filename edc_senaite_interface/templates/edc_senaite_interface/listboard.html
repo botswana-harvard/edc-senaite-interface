@@ -17,12 +17,29 @@
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table.min.js' %}"></script>
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
 	<script type="text/javascript">
-        function responseHandler(res) {
-            return {
-                total: res.total,
-                rows: res.rows
-            };
-        }
+		$(function() {
+		  	$('#resultTable').on('page-change.bs.table', function() {
+		    	// Get the current pagination state of the table
+		    	var queryParams = $('#resultTable').bootstrapTable('getOptions');
+		    	// Make an AJAX request to fetch the paginated data
+		    	$.ajax({
+		      		url: "{% url listboard_url 'all' %}",
+		      		data: {
+		        		limit: queryParams.pageSize,
+		        		offset: queryParams.pageSize * (queryParams.pageNumber - 1),
+		      		},
+		      		method: 'GET',
+		      		success: function(data) {
+		        		// Update the table data with the new paginated data
+		        		$('#resultTable').bootstrapTable('load', data);
+		      		},
+		      		error: function(jqXHR, textStatus, errorThrown) {
+		        		// Handle the error if the request fails
+		        		console.log('Error fetching paginated data:', errorThrown);
+		      		}
+		    	});
+		  	});
+		});
     </script>
 {% endblock %}
 
@@ -37,8 +54,8 @@
 		    <div class="card bg-c-blue order-card">
 		        <div class="card-block">
 		            <h6 class="m-b-20">Pending Samples</h6>
-		            <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>{{pending|length}}</span></h2>
-		            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+		            <h2 class="text-right"><i class="fa fa-hourglass-half f-left"></i><span>{{pending}}</span></h2>
+		            <p class="m-b-0">Collected Samples<span class="f-right">{{collected}}</span></p>
 		        </div>
 		    </div>
 		</div>
@@ -48,7 +65,7 @@
 		        <div class="card-block">
 		            <h6 class="m-b-20">Resulted Samples</h6>
 		            <h2 class="text-right"><i class="fa fa-flask f-left"></i><span>{{resulted|length}}</span></h2>
-		            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+		            <p class="m-b-0">Collected Samples<span class="f-right">{{collected}}</span></p>
 		        </div>
 		    </div>
 		</div>
@@ -57,8 +74,8 @@
 		    <div class="card bg-c-yellow order-card">
 		        <div class="card-block">
 		            <h6 class="m-b-20">Stored Samples</h6>
-		            <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>{{stored|length}}</span></h2>
-		            <p class="m-b-0">Collected Samples<span class="f-right">{{results|length}}</span></p>
+		            <h2 class="text-right"><i class="fa fa-archive f-left"></i><span>{{stored|length}}</span></h2>
+		            <p class="m-b-0">Collected Samples<span class="f-right">{{collected}}</span></p>
 		        </div>
 		    </div>
 		</div>
@@ -81,6 +98,7 @@
 		data-pagination="true"
 		data-side-pagination="server"
 		data-page-list="[10, 25, 50, 100]"
+		data-page-size="10"
 		
  >
 <thead style="background-color:#F3F3F3">
@@ -89,11 +107,12 @@
      <!-- begin results header -->
     <th data-field='sample_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample ID</th>
     <th data-field='participant_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Participant ID</th>
-    <th data-field='sample_status' data-sortable='true' data-width="100" data-filter-control="select" data-align="center">Sample State</th>
+    <th data-field='sample_type' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample Type</th>
+    <th data-field='sample_status' data-sortable='true' data-width="100" data-filter-control="input" data-align="center">Sample State</th>
     <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
-    <th data-field='is_partition' data-sortable='true' data-filter-control="select" data-width="100" data-align="center">Primary Sample</th>
+    <th data-field='is_partition' data-sortable='true' data-width="100" data-align="center">Primary Sample</th>
     <th data-field='parent_id' data-sortable='true' data-filter-control="input" data-align="center">Parent ID</th>
-    <th data-field='requisition_id' data-sortable='true' data-filter-control="input" data-align="center">Requisition ID</th>
+    <th data-field='requisition_id' data-sortable='true' data-align="center">Requisition ID</th>
     <th data-field='view_results' data-align="right"></th>
     <!-- end results header -->
 {% endblock listboard_table_header %}

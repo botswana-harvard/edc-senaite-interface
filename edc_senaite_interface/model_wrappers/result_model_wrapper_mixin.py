@@ -61,6 +61,10 @@ class ResultModelWrapperMixin:
         return getattr(self.requisition_obj, 'subject_identifier', '')
 
     @property
+    def specimen_type(self):
+        return getattr(self.requisition_obj, 'sample_type', '')
+
+    @property
     def requisition_obj(self):
         if self.result_model_obj:
             model_obj = getattr(self.result_model_obj, 'requisition_obj', None)
