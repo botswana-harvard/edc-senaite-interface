@@ -8,12 +8,12 @@ class ListboardViewFilters(ListboardViewFilters):
         label='All',
         lookup={})
 
-    pending = ListboardFilter(
+    resulted = ListboardFilter(
         name='resulted',
         label='Resulted Samples',
         lookup={'sample_status': 'resulted'})
 
-    approved = ListboardFilter(
+    stored = ListboardFilter(
         name='stored',
         label='Stored Samples',
         lookup={'sample_status': 'stored'})

@@ -1,14 +1,28 @@
 {% extends listboard_base_template %}
-{% load admin_urls %}
+
 {% load edc_base_extras %}
 <!-- Dashboard extras -->
 {% load edc_dashboard_extras %}
+{% load edc_senaite_interface_extras %}
 {% load static %}
 
 {% block extra-css %}
 	{{ block.super }}
 	<link href="{% static 'edc_senaite_interface/css/listboard.css' %}"rel=stylesheet>
 	<link href="{% static 'edc_senaite_interface/css/bootstrap/bootstrap-table.min.css' %}"rel=stylesheet>
+	<style>
+		#filters > li > a {
+		    border-radius: 20px;
+		    background-color: white;
+		    margin-right: 3px;
+		    color: gray;
+		}
+		
+		#filters > li.active > a, #filters > li.active > a:hover, #filters > li.active > a:focus {
+		  background-color: green;
+		  color: white;
+		}
+	</style>
 {% endblock extra-css %}
 
 
@@ -18,27 +32,31 @@
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
 	<script type="text/javascript">
 		$(function() {
-		  	$('#resultTable').on('page-change.bs.table', function() {
-		    	// Get the current pagination state of the table
-		    	var queryParams = $('#resultTable').bootstrapTable('getOptions');
-		    	// Make an AJAX request to fetch the paginated data
-		    	$.ajax({
-		      		url: "{% url listboard_url 'all' %}",
-		      		data: {
-		        		limit: queryParams.pageSize,
-		        		offset: queryParams.pageSize * (queryParams.pageNumber - 1),
-		      		},
-		      		method: 'GET',
-		      		success: function(data) {
-		        		// Update the table data with the new paginated data
-		        		$('#resultTable').bootstrapTable('load', data);
-		      		},
-		      		error: function(jqXHR, textStatus, errorThrown) {
-		        		// Handle the error if the request fails
-		        		console.log('Error fetching paginated data:', errorThrown);
-		      		}
-		    	});
-		  	});
+			const data = [];
+			{% for obj in results %}
+				var action_button = "";
+				if ("{{obj.sample_status}}" === 'resulted') {
+					var action_button = "<div class='btn btn-group btn-group-sm'>" +
+										"<a href={{ obj.sample_results_file }} class='btn btn-outline-secondary'>"+
+										"<i class='fa fa-eye'></i> View Results </a></div>";
+				} else if ("{{obj.sample_status}}" === 'stored') {
+					var action_button = "<div class='btn btn-group btn-group-sm'>" +
+										"<a href={{ obj.storage_location }} class='btn btn-outline-secondary'>"+
+										"<i class='fa fa-eye'></i> View in Storage </a></div>";
+				}
+				data.push({	'id': "{{obj.id}}",
+							'sample_id': "{{obj.sample_id}}",
+							'participant_id': "<a href='{% url obj.dashboard_url obj.participant_id %}'> {{obj.participant_id}} </a>",
+							'sample_type': "{{obj.specimen_type}}",
+							'sample_status': "{{obj.sample_status}}",
+							'date_stored': "{{obj.date_stored}}",
+							'is_partition': "{{obj.is_partition}}",
+							'parent_id': "{{obj.parent_id}}",
+							'requisition_id': "{{obj.requisition_id}}",
+							'view_results':  action_button });
+			{% endfor %}
+			
+			$('#resultTable').bootstrapTable({data: data});
 		});
     </script>
 {% endblock %}
@@ -82,84 +100,52 @@
 	</div>
 {% endblock %}
 
+{% if listboard_view_filters %}
+	
+		<ul class="nav nav-pills well" id='filters'>
+		    {% for listboard_filter in listboard_view_filters %}
+			    <li class="{% if f == listboard_filter.name or e == listboard_filter.name %} active {% endif %}">
+			    	<a href="{% url listboard_filter_url %}?{{ listboard_filter.querystring }}">
+			    		{{ listboard_filter.label }}{% if f == listboard_filter.name or e == listboard_filter.name %}&nbsp;<i class="fa fa-check fa-fw"></i>{% endif %}
+			    	</a>
+			    </li>
+		    {% endfor %}
+	  	</ul>
+
+ {% endif %}
+
 <!-- begin table -->
-<div class="table table-responsive">
-<table 	id="resultTable"
-		class="table table-hover table-striped small"
-		data-toggle="table"
-		data-toolbar="#toolbar"
-		data-toolbar-align="left"
-		data-filter-control="true"
-		data-show-columns="true"
-		data-show-refresh="true"
-  		data-show-columns-toggle-all="true"
-		data-show-fullscreen="true"
-		data-url="{% url listboard_url 'all' %}"
-		data-pagination="true"
-		data-side-pagination="server"
-		data-page-list="[10, 25, 50, 100]"
-		data-page-size="10"
-		
- >
-<thead style="background-color:#F3F3F3">
 
-{% block listboard_table_header %}
-     <!-- begin results header -->
-    <th data-field='sample_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample ID</th>
-    <th data-field='participant_id' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Participant ID</th>
-    <th data-field='sample_type' data-sortable='true' data-filter-control="input"  data-width="200" data-align="center">Sample Type</th>
-    <th data-field='sample_status' data-sortable='true' data-width="100" data-filter-control="input" data-align="center">Sample State</th>
-    <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
-    <th data-field='is_partition' data-sortable='true' data-width="100" data-align="center">Primary Sample</th>
-    <th data-field='parent_id' data-sortable='true' data-filter-control="input" data-align="center">Parent ID</th>
-    <th data-field='requisition_id' data-sortable='true' data-align="center">Requisition ID</th>
-    <th data-field='view_results' data-align="right"></th>
-    <!-- end results header -->
-{% endblock listboard_table_header %}
+	<table 	id="resultTable"
+			class="table table-hover table-striped small"
+			data-toolbar="#toolbar"
+			data-toolbar-align="left"
+			data-show-columns="true"
+			data-show-refresh="true"
+  			data-show-columns-toggle-all="true"
+  			data-show-fullscreen="true"
+  			data-page-size="10">
+		<thead style="background-color:#F3F3F3">
+			<tr>
+				{% block listboard_table_header %}
+				     <!-- begin results header -->
+				    <th data-field='sample_id' data-sortable='true' data-width="200" data-align="center">Sample ID</th>
+				    <th data-field='participant_id' data-sortable='true'  data-width="200" data-align="center">Participant ID</th>
+				    <th data-field='sample_type' data-sortable='true'  data-width="200" data-align="center">Sample Type</th>
+				    <th data-field='sample_status' data-sortable='true' data-width="100" data-align="center">Sample State</th>
+				    <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
+				    <th data-field='is_partition' data-sortable='true' data-width="100" data-align="center">Primary Sample</th>
+				    <th data-field='parent_id' data-sortable='true' data-align="center">Parent ID</th>
+				    <th data-field='requisition_id' data-sortable='true' data-align="center">Requisition ID</th>
+				    <th data-field='view_results' data-align="right"></th>
+				    <!-- end results header -->
+				{% endblock listboard_table_header %}
+			</tr>
+		</thead>
+	</table>
 
-</thead><tbody>
-
-{% block listboard_table_body %}
-
-    {% for result in results %}
-        <tr>
-        {% block listboard_table_columns %}
-            <td nowrap>{{result.sample_id}}</td>
-            <td nowrap>{{result.participant_id}}</td>
-		    <td nowrap>{{result.sample_status|title}}</td>
-		    <td nowrap>{{result.date_stored}}</td>
-		    <td nowrap>{{result.is_partition|yesno:"No, Yes"}}</td>
-		    <td nowrap>{{result.parent_id}}</td>
-		    <td nowrap>{{result.requisition_id}}</td>
-		    <td nowrap>
-		    	<div class="btn-group btn-group-sm">
-		    		<a {% if result.sample_status == 'resulted' %}
-		    				href="{{ result.sample_results_file }}"
-		    			{% else %}
-		    				href="{{ result.storage_location }}"
-		    			{% endif %}
-		    			class="btn btn-outline-secondary">
-		    		{% if result.sample_status == 'resulted' %}
-		    			<i class="fa fa-eye"></i> View Results
-		    		{% else %}
-		    			<i class="fa fa-vials"></i> View in Storage
-		    		{% endif %}
-		    		</a>
-        		</div>
-		    </td>
-        {% endblock listboard_table_columns %}
-        </tr>
-    {% endfor %}
-
-{% endblock listboard_table_body %}
-
-</tbody>
-</table>
-
-</div><!-- end table -->
-
-
-</div>  <!--end panel -->
-</div> <!--end panel-group -->
+{% if results|length > 0 %}
+	{% paginator_row %}
+{% endif %}
 <!-- end listboard main block -->
 {% endblock main %}

@@ -14,3 +14,7 @@ class ResultModelWrapper(ResultModelWrapperMixin, ModelWrapper):
     @property
     def result_model_wrapper_cls(self):
         return self
+
+    @property
+    def dashboard_url(self):
+        return ''

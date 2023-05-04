@@ -16,10 +16,10 @@ Including another URLconf
 
 from django.urls import path
 from django.views.generic.base import RedirectView
+from edc_dashboard import UrlConfig
 
 from .admin_site import edc_senaite_interface_admin
 from .views import ListboardView
-from .url_config import UrlConfig
 
 
 app_name = 'edc_senaite_interface'
