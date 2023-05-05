@@ -117,9 +117,9 @@ class SenaiteRequisitionModelMixin(models.Model):
 
     @property
     def sample_type(self):
-        """Returnn the sample type.
-        Overide this method to match the sample type used on the EDC
-        with the one onn Senaite LIMS.
+        """Return the sample type.
+        Override this method to match the sample type used on the EDC
+        with the one on Senaite LIMS.
         """
         panel_name = self.panel.name
         return app_config.sample_type_match.get(panel_name, None)
