@@ -5,6 +5,9 @@ from django.db import models
 from edc_base.model_validators.date import datetime_not_future
 from edc_base.utils import get_utcnow
 from edc_protocol.validators import datetime_not_before_study_start
+from edc_search.model_mixins import SearchSlugManager
+
+from ..model_mixins.search_slug_model_mixin import SearchSlugModelMixin
 
 SAMPLE_STATUS = (
     ('resulted', 'Resulted'),
@@ -13,7 +16,11 @@ SAMPLE_STATUS = (
 )
 
 
-class SenaiteResultModelMixin(models.Model):
+class SenaiteResultModelManager(SearchSlugManager, models.Manager):
+    pass
+
+
+class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
     """ Mixin defining attributes for capturing result details once a requisition
         is resulted or stored on the LIMS system.
     """
@@ -91,6 +98,8 @@ class SenaiteResultModelMixin(models.Model):
 
         os.remove(results_file.name)
         return True
+
+    objects = SenaiteResultModelManager()
 
     def __str__(self):
         return f'{self.sample_id}, status: {self.sample_status}'

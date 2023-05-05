@@ -1,2 +1,3 @@
 from .requisition_model_mixin import SenaiteRequisitionModelMixin
 from .result_model_mixin import SenaiteResultModelMixin, SenaiteResultValueMixin
+from .search_slug_model_mixin import SearchSlugModelMixin
