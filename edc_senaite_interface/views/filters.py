@@ -10,10 +10,20 @@ class ListboardViewFilters(ListboardViewFilters):
 
     resulted = ListboardFilter(
         name='resulted',
-        label='Resulted Samples',
+        label='Resulted',
         lookup={'sample_status': 'resulted'})
 
     stored = ListboardFilter(
         name='stored',
-        label='Stored Samples',
+        label='Stored',
         lookup={'sample_status': 'stored'})
+
+    primary = ListboardFilter(
+        name='primary',
+        label='Primary',
+        lookup={'is_partition': False})
+
+    partition = ListboardFilter(
+        name='partition',
+        label='Partition',
+        lookup={'is_partition': True})

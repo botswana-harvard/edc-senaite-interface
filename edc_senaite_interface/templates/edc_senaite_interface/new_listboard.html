@@ -87,34 +87,12 @@
 	</div>
 {% endblock %}
 
-{% if listboard_view_filters %}
-		<ul class="nav nav-pills well" id='filters'>
-			<li style="padding: 2px 4px; border: 1px solid lightgray; background-color: #fff; color: lightgray">
-				<i class="fa fa-filter f-center"></i>
-			</li>
-		    {% for listboard_filter in listboard_view_filters %}
-			    <li class="{% if f == listboard_filter.name or e == listboard_filter.name %} active {% endif %}">
-			    	<a href="{% url listboard_filter_url %}?{{ listboard_filter.querystring }}">
-			    		{{ listboard_filter.label }}{% if f == listboard_filter.name or e == listboard_filter.name %}&nbsp;<i class="fa fa-check fa-fw"></i>{% endif %}
-			    	</a>
-			    </li>
-		    {% endfor %}
-	  	</ul>
- {% endif %}
-<div id="toolbar">
-	{% block listboard_search_form %}
-		{% include 'edc_senaite_interface/search_form.html' %}
-	{% endblock listboard_search_form %}
-	<span>&nbsp;</span>
-	<span>&nbsp;</span>
-</div>
-
 <!-- begin table -->
 
 	<table 	id="resultTable"
 			class="table table-hover table-striped small"
 			data-toolbar="#toolbar"
-			data-toolbar-align="right"
+			data-toolbar-align="left"
 			data-show-columns="true"
 			data-show-refresh="true"
   			data-show-columns-toggle-all="true"

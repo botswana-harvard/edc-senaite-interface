@@ -48,3 +48,16 @@ body {
 .f-right {
     float: right;
 }
+
+#filters > li > a {
+	border-radius: 20px;
+    background-color: white;
+    margin-left: 10px;
+    padding: 5px 10px;
+    color: black;
+}
+
+#filters > li.active > a, #filters > li.active > a:hover, #filters > li.active > a:focus {
+  	background-color: green;
+  	color: white;
+}
