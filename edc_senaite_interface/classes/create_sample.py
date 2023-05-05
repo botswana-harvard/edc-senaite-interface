@@ -23,7 +23,7 @@ class SampleImporter(APIResolversMixin):
 #             print(f'Transition sample {id} to Lab....')
 #             transition_data = {'transition': 'send_to_lab'}
 #             self.update_sample(identifier=id, data=transition_data)
-            print(f'Sample {id} successfully sent to lab')
+#             print(f'Sample {id} successfully sent to lab')
 
         print(f'Total requests: {self._number_of_requests}')
         return response
@@ -34,7 +34,7 @@ class SampleImporter(APIResolversMixin):
             values = self.resolve_uids(data)
 
             # Cannot update client, sample type and template... unauthorized.
-            exclude = ['Client', 'SampleType', 'Template']
+            exclude = ['Client', 'SampleType', 'Template', 'Analyses']
             for value in exclude:
                 values.pop(value)
         sampled_dt = datetime.strptime(values.get('DateSampled'), "%Y-%m-%d %H:%M")
