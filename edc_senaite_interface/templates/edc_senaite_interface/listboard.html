@@ -18,13 +18,18 @@
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table.min.js' %}"></script>
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
 	<script type="text/javascript">
+		function openModal(pdfUrl) {
+			console.log(pdfUrl);
+			$('#pdfModal').modal('show');
+		    $('#pdfEmbed').attr('src', pdfUrl);
+		}
 		$(function() {
 			const data = [];
 			{% for obj in results %}
 				var action_button = "";
 				if ("{{obj.sample_status}}" === 'resulted') {
 					var action_button = "<div class='btn btn-group btn-group-sm'>" +
-										"<a href={{ obj.sample_results_file }} class='btn btn-outline-secondary'>"+
+										"<a class='btn btn-outline-secondary' onclick=openModal('{{ obj.result_pdf_link }}')>"+
 										"<i class='fa fa-eye'></i> View Results </a></div>";
 				} else if ("{{obj.sample_status}}" === 'stored') {
 					var action_button = "<div class='btn btn-group btn-group-sm'>" +
@@ -49,8 +54,28 @@
 {% endblock %}
 
 {% block main %}
+<div class='overlay hide-loader' id='loader'>
+    <div class='overlay__inner'>
+        <div class='overlay__content'>
+        	<span class='spinner'></span>
+        </div>
+    </div>
+</div>
 <!-- start listboard main block-->
-
+<!-- Modal -->
+<div id="pdfModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      	<div class="modal-body">
+	        	<embed id="pdfEmbed" width="100%" height="600" type="application/pdf">
+	      	</div>
+	      	<div class="modal-footer">
+	        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      	</div>
+	    </div>
+  	</div>
+</div>
 
 <!-- Header Cards -->
 {% block header_cards %}
@@ -106,6 +131,10 @@
 		{% include 'edc_senaite_interface/search_form.html' %}
 	{% endblock listboard_search_form %}
 	<span>&nbsp;</span>
+	{% block listboard_export %}
+		{% include 'edc_senaite_interface/buttons/export_button.html' %}
+	{% endblock listboard_export %}
+	<span>&nbsp;</span>
 	<span>&nbsp;</span>
 </div>
 
@@ -118,7 +147,6 @@
 			data-show-columns="true"
 			data-show-refresh="true"
   			data-show-columns-toggle-all="true"
-  			data-show-fullscreen="true"
   			data-page-size="10">
 		<thead style="background-color:#F3F3F3">
 			<tr>

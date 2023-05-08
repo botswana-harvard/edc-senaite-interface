@@ -1,0 +1,15 @@
+<span class="dropdown">
+    <button class="btn btn-default btn-md dropdown-toggle" type="button" data-toggle="dropdown">
+    	<i class="glyphicon glyphicon-export icon-share"></i>
+    	<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+    	{% if latest_export_file %}
+    		<li><a href={{latest_export_file.file_url}} >{{latest_export_file.document.name}}</a></li>
+    		<li class="divider"></li>
+    	{% endif %}
+    	{% for key, type in export_types.items %}
+      	<li><a href="{% url listboard_url %}{% if querystring %}{{querystring}}&export={{key}}{% else %}?export={{key}}{% endif %}">{{type}}</a></li>
+      	{% endfor %}
+    </ul>
+</span>
