@@ -72,3 +72,11 @@ class ResultModelWrapperMixin:
                 model_obj = getattr(self.result_model_obj, 'primary_requisition', None)
             return model_obj
         return {}
+
+    @property
+    def result_pdf_link(self):
+        url = ''
+        if self.result_model_obj:
+            results_pdf = getattr(self.result_model_obj, 'sample_results_file', None)
+            url = results_pdf.url if results_pdf else ''
+        return url

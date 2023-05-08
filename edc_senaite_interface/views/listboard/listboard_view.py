@@ -8,9 +8,11 @@ from edc_navbar import NavbarViewMixin
 
 from ..filters import ListboardViewFilters
 from ...model_wrappers import ResultModelWrapper
+from ...view_mixins import ExportViewMixin
+from ...models import ResultExportFile
 
 
-class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
+class ListboardView(ExportViewMixin, NavbarViewMixin, EdcBaseViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     ListboardView):
 
@@ -34,7 +36,9 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
             'resulted': self.resulted,
             'stored': self.stored,
             'collected': self.collected_samples.count(),
-            'pending': self.pending_samples})
+            'pending': self.pending_samples,
+            'latest_export_file': self.latest_export_file,
+            'export_types': {'csv': 'CSV', 'excel': 'MS-Excel'}, })
         return context
 
     @property
@@ -61,3 +65,10 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
         pending = self.collected_samples.exclude(sample_id__in=result_objs)
         return pending.count()
+
+    @property
+    def latest_export_file(self):
+        try:
+            return ResultExportFile.objects.latest('created')
+        except ResultExportFile.DoesNotExist:
+            return None
