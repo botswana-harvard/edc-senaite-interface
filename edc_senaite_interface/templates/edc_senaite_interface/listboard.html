@@ -54,8 +54,14 @@
 {% endblock %}
 
 {% block main %}
+<div class='overlay hide-loader' id='loader'>
+    <div class='overlay__inner'>
+        <div class='overlay__content'>
+        	<span class='spinner'></span>
+        </div>
+    </div>
+</div>
 <!-- start listboard main block-->
-
 <!-- Modal -->
 <div id="pdfModal" class="modal fade" role="dialog">
 	<div class="modal-dialog">
