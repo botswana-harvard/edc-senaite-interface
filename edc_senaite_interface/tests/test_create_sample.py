@@ -1,16 +1,15 @@
 from django.test import TestCase, tag
 from datetime import datetime
 from django.core.exceptions import ValidationError
-from edc_senaite_interface.classes.get_results import AnalysisResult
 
 from ..classes import SampleImporter
 from ..models import SenaiteUser
 
 
-class TestSendMessage(TestCase):
+class TestCreateSample(TestCase):
 
     def setUp(self):
-        self.host = "https://bhplims.bhp.org.bw"
+        self.host = "https://bhplims-dev.bhp.org.bw"
         self.user = "admin"
         self.password = "gah+w2Tu"
 
@@ -37,20 +36,13 @@ class TestSendMessage(TestCase):
             "Volume": "10mL",
         }
 
+    @tag('create_sample')
     def test_create_sample(self):
         """
         """
         importer = SampleImporter(host=self.host)
         if importer.auth(self.user, self.password):
             importer.create_sample(data=self.data)
-        else:
-            raise ValidationError('Cannot authenticate')
-
-    @tag('get_results')
-    def test_get_results(self):
-        analysis_request = AnalysisResult(host=self.host)
-        if analysis_request.auth(self.user, self.password):
-            analysis_request.get_results()
         else:
             raise ValidationError('Cannot authenticate')
 

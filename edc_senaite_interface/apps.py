@@ -16,6 +16,7 @@ class AppConfig(DjangoAppConfig):
     sample_type_match = None
     container_type_match = None
     template_match = None
+    result_models = {'edc_senaite_interface': ['senaiteresult', 'senaiteresultvalue']}
     DEVICE_ID = '99'
     DEVICE_ROLE = CENTRAL_SERVER
 
