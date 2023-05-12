@@ -52,7 +52,7 @@ class ExportViewMixin(ContextMixin):
                     record.update(values)
             else:
                 values = model_to_dict(instance=obj.object, fields=self.storage_fields, )
-                record.update(values.values)
+                record.update(values)
                 record.update({f'{field}': '' for field in self.result_fields})
             data.append(record)
         return data
