@@ -1,6 +1,5 @@
 import csv
 import openpyxl
-from django.contrib import messages
 from django.views.generic.base import ContextMixin
 from django.forms.models import model_to_dict
 from edc_base.utils import get_utcnow
@@ -32,9 +31,6 @@ class ExportViewMixin(ContextMixin):
         for row in self.get_export_data:
             writer.writerow(row)
 
-        messages.add_message(
-            self.request, messages.INFO,
-            'Results export file successfully generated')
         return response
 
     def export_excel(self):
@@ -52,10 +48,6 @@ class ExportViewMixin(ContextMixin):
         response['Content-Disposition'] = f'attachment; filename={filename}'
 
         workbook.save(response)
-
-        messages.add_message(
-            self.request, messages.INFO,
-            'Results export file successfully generated')
 
         return response
 
