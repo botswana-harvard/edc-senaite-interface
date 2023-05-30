@@ -37,6 +37,10 @@ class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
         max_length=50,
         unique=True, )
 
+    template_name = models.CharField(
+        verbose_name='Sample template',
+        max_length=50, )
+
     sample_status = models.CharField(
         verbose_name='Status',
         max_length=50,
@@ -75,6 +79,20 @@ class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
     def requisition_obj(self):
         return self.get_requisition(sample_id=self.sample_id)
 
+    @property
+    def template_match_dict(self):
+        return django_apps.get_app_config('edc_senaite_interface').template_match
+
+    def update_sample_template(self):
+        panel_name = None
+        if self.requisition_obj:
+            panel_name = self.requisition_obj.panel.name
+        elif self.primary_requisition:
+            panel_name = self.primary_requisition.panel.name
+        template = self.template_match_dict.get(
+            panel_name, None) if self.template_match_dict else None
+        self.template_name = template
+
     def get_requisition(self, sample_id=None):
         try:
             model_obj = self.requisition_model_cls.objects.get(
@@ -103,6 +121,12 @@ class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
 
     def __str__(self):
         return f'{self.sample_id}, status: {self.sample_status}'
+
+    def save(self, *args, **kwargs):
+        # Update the sample template name from the app config, `panel name` : `template`
+        # mapping.
+        self.update_sample_template()
+        super().save(*args, **kwargs)
 
     class Meta:
         abstract = True
