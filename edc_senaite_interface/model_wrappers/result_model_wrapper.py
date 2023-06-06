@@ -18,3 +18,8 @@ class ResultModelWrapper(ResultModelWrapperMixin, ModelWrapper):
     @property
     def dashboard_url(self):
         return ''
+
+    @property
+    def results_objs(self):
+        if self.object:
+            return self.object.senaiteresultvalue_set.all()

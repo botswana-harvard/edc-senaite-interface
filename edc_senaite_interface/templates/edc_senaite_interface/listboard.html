@@ -40,6 +40,7 @@
 							'sample_id': "{{obj.sample_id}}",
 							'participant_id': "<a href='{% url obj.dashboard_url obj.participant_id %}'> {{obj.participant_id}} </a>",
 							'sample_type': "{{obj.specimen_type}}",
+							'template_name': "{{obj.template_name}}",
 							'sample_status': "{{obj.sample_status}}",
 							'date_stored': "{{obj.date_stored}}",
 							'is_partition': "{{obj.is_partition}}",
@@ -155,9 +156,10 @@
 				    <th data-field='sample_id' data-sortable='true' data-width="200" data-align="center">Sample ID</th>
 				    <th data-field='participant_id' data-sortable='true'  data-width="200" data-align="center">Participant ID</th>
 				    <th data-field='sample_type' data-sortable='true'  data-width="200" data-align="center">Sample Type</th>
-				    <th data-field='sample_status' data-sortable='true' data-width="100" data-align="center">Sample State</th>
+				    <th data-field='template_name' data-sortable='true'  data-width="80" data-align="center">Sample Template</th>
+				    <th data-field='sample_status' data-sortable='true' data-width="80" data-align="center">Status</th>
 				    <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
-				    <th data-field='is_partition' data-sortable='true' data-width="100" data-align="center">Primary Sample</th>
+				    <th data-field='is_partition' data-sortable='true' data-width="80" data-align="center">Primary Sample</th>
 				    <th data-field='parent_id' data-sortable='true' data-align="center">Parent ID</th>
 				    <th data-field='requisition_id' data-sortable='true' data-align="center">Requisition ID</th>
 				    <th data-field='view_results' data-align="right"></th>
