@@ -17,7 +17,7 @@ class APIResolversMixin(object):
         self.session = requests.Session()
         self.session.auth = (user, password)
         r = self.get('auth', None)
-        return r.status_code == 200
+        return getattr(r, 'status_code', None) == 200
 
     def post(self, url, payload):
         url = self.resolve_api_slug(url)
