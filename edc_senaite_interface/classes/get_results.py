@@ -79,12 +79,13 @@ class AnalysisResult(APIResolversMixin):
             if option.get('ResultValue') == result:
                 result = option.get('ResultText')
                 break
+        params.update(result_value=result, )
 
         result_dt_str = data.get('ResultCaptureDate', '')
-        result_dt = datetime.strptime(
-            ''.join(result_dt_str.rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
-        params.update(result_value=result,
-                      date_resulted=result_dt.date())
+        if result_dt_str:
+            result_dt = datetime.strptime(
+                ''.join(result_dt_str.rsplit(':', 1)), '%Y-%m-%dT%H:%M:%S%z')
+            params.update(date_resulted=result_dt.date())
         return params
 
     def create_result_items(self, result=None, data={}):

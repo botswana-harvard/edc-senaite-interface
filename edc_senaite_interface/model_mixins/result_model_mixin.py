@@ -156,7 +156,7 @@ class SenaiteResultValueMixin(models.Model):
 
     out_range = models.BooleanField(default=False)
 
-    date_resulted = models.DateField()
+    date_resulted = models.DateField(null=True)
 
     def __str__(self):
         return f'{self.analysis_title}, result: {self.result_value}'
