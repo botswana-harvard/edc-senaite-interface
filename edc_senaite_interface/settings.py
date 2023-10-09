@@ -128,6 +128,7 @@ USE_L10N = False
 
 USE_TZ = True
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 SITE_CODE = '1'
 DEFAULT_STUDY_SITE = '1'
