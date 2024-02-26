@@ -29,6 +29,8 @@ class SenaiteRequisitionModelMixin(models.Model):
     @property
     def data(self):
         data = {}
+
+        estimated_volume = '{:.2f}'.format(self.estimated_volume)
         data.update(
             Client=app_config.client,
             Contact=self.contact,
@@ -44,7 +46,7 @@ class SenaiteRequisitionModelMixin(models.Model):
             Visit=self.visit_code_merge,
             VisitCode=self.visit_code,
             DateOfBirth=self.dob.strftime("%Y-%m-%d"),
-            Volume=str(self.estimated_volume),
+            Volume=estimated_volume,
             Remarks=self.remarks,
             Priority=self.senaite_priority)
         return data
@@ -64,9 +66,12 @@ class SenaiteRequisitionModelMixin(models.Model):
 
     @property
     def consent_obj(self):
-        consent = django_apps.get_model(
-            self.consent_model).objects.filter(
-                subject_identifier=self.subject_identifier).last()
+        consent_model_cls = django_apps.get_model(self.consent_model)
+        try:
+            consent = consent_model_cls.objects.filter(
+                subject_identifier=self.subject_identifier).latest('consent_datetime')
+        except consent_model_cls.DoesNotExist:
+            return None
         return consent
 
     @property

@@ -18,12 +18,13 @@ class SampleImporter(APIResolversMixin):
 
         items = result.get('items', [])
         if items:
-            id = items[0].get('id')
-            print(f'Object created: {id}')
+            _id = items[0].get('id')
+            print(f'Object created: {_id}')
 #             print(f'Transition sample {id} to Lab....')
 #             transition_data = {'transition': 'send_to_lab'}
-#             self.update_sample(identifier=id, data=transition_data)
-#             print(f'Sample {id} successfully sent to lab')
+            # Perform an update once created, for sample volume - 'workaround'
+            self.update_sample(identifier=_id, data=data)
+            print(f'Sample {_id} updated for volume value')
 
         print(f'Total requests: {self._number_of_requests}')
         return response
@@ -46,8 +47,8 @@ class SampleImporter(APIResolversMixin):
         result = json.loads(response.text)
         items = result.get('items', [])
         if items:
-            id = items[0].get('id')
-            print(f'Object updated: {id}')
+            _id = items[0].get('id')
+            print(f'Object updated: {_id}')
 
         print(f'Total requests: {self._number_of_requests}')
 
