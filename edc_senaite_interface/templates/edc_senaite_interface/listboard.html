@@ -10,6 +10,7 @@
 	{{ block.super }}
 	<link href="{% static 'edc_senaite_interface/css/listboard.css' %}"rel=stylesheet>
 	<link href="{% static 'edc_senaite_interface/css/bootstrap/bootstrap-table.min.css' %}"rel=stylesheet>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 {% endblock extra-css %}
 
 
@@ -17,7 +18,37 @@
 	{{ block.super }}
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table.min.js' %}"></script>
 	<script src="{% static 'edc_senaite_interface/js/bootstrap/bootstrap-table-filter-control.min.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript">
+		$(document).ready(function () {
+			// Initialize datepickers
+            $('#start_date').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+            $('#end_date').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+            
+         	// Handle export option click
+            $('.export-option').on('click', function (e) {
+                e.preventDefault();
+                var exportType = $(this).data('type');
+                var startDate = $('#start_date').val();
+                var endDate = $('#end_date').val();
+                var filterStr = "export=" + exportType + "&start_date=" + startDate + "&end_date=" + endDate;
+                var exportUrl = "{% url listboard_url %}{% if querystring %}{{querystring}}&" + filterStr + "{% else %}?" + filterStr + "{% endif %}";
+                window.location.href = exportUrl;
+            });
+         	
+         	// Handle date filter button click
+         	$('#date-filter-btn').on('click', function () {
+         		var startDate = $('#start_date').val();
+                var endDate = $('#end_date').val();
+                var filterStr =  "start_date=" + startDate + "&end_date=" + endDate;
+                var exportUrl = "{% url listboard_url %}{% if querystring %}{{querystring}}&" + filterStr + "{% else %}?" + filterStr + "{% endif %}";
+         	});
+		});
+
 		function openModal(pdfUrl) {
 			console.log(pdfUrl);
 			$('#pdfModal').modal('show');
@@ -39,11 +70,11 @@
 				data.push({	'id': "{{obj.id}}",
 							'sample_id': "{{obj.sample_id}}",
 							'participant_id': "<a href='{% url obj.dashboard_url obj.participant_id %}'> {{obj.participant_id}} </a>",
+							'visit_code': "{{obj.visit_code}}",
 							'sample_type': "{{obj.specimen_type}}",
 							'template_name': "{{obj.template_name}}",
 							'sample_status': "{{obj.sample_status}}",
 							'date_stored': "{{obj.date_stored}}",
-							'is_partition': "{{obj.is_partition}}",
 							'parent_id': "{{obj.parent_id}}",
 							'requisition_id': "{{obj.requisition_id}}",
 							'view_results':  action_button });
@@ -127,6 +158,11 @@
 		    {% endfor %}
 	  	</ul>
  {% endif %}
+<div id="date-filters">
+ 	{% block listboard_filters %}
+ 		{% include 'edc_senaite_interface/date_filter_form.html' %}
+ 	{% endblock listboard_filters %}
+</div>
 <div id="toolbar">
 	{% block listboard_search_form %}
 		{% include 'edc_senaite_interface/search_form.html' %}
@@ -139,8 +175,7 @@
 	<span>&nbsp;</span>
 </div>
 
-<!-- begin table -->
-
+	<!-- begin table -->
 	<table 	id="resultTable"
 			class="table table-hover table-striped small"
 			data-toolbar="#toolbar"
@@ -155,11 +190,11 @@
 				     <!-- begin results header -->
 				    <th data-field='sample_id' data-sortable='true' data-width="200" data-align="center">Sample ID</th>
 				    <th data-field='participant_id' data-sortable='true'  data-width="200" data-align="center">Participant ID</th>
+				    <th data-field='visit_code' data-sortable='false'  data-width="200" data-align="center">Visit Code</th>
 				    <th data-field='sample_type' data-sortable='true'  data-width="200" data-align="center">Sample Type</th>
 				    <th data-field='template_name' data-sortable='true'  data-width="80" data-align="center">Sample Template</th>
 				    <th data-field='sample_status' data-sortable='true' data-width="80" data-align="center">Status</th>
 				    <th data-field='date_stored' data-sortable='true' data-align="center">Date Stored</th>
-				    <th data-field='is_partition' data-sortable='true' data-width="80" data-align="center">Primary Sample</th>
 				    <th data-field='parent_id' data-sortable='true' data-align="center">Parent ID</th>
 				    <th data-field='requisition_id' data-sortable='true' data-align="center">Requisition ID</th>
 				    <th data-field='view_results' data-align="right"></th>

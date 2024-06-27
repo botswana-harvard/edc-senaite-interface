@@ -5,7 +5,7 @@
     </button>
     <ul class="dropdown-menu">
     	{% for key, type in export_types.items %}
-      	<li><a href="{% url listboard_url %}{% if querystring %}{{querystring}}&export={{key}}{% else %}?export={{key}}{% endif %}">{{type}}</a></li>
+      	<li><a class="export-option" data-type="{{key}}" href="{% url listboard_url %}{% if querystring %}{{querystring}}&export={{key}}{% else %}?export={{key}}{% endif %}">{{type}}</a></li>
       	{% endfor %}
     </ul>
 </span>

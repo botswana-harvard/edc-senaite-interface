@@ -23,3 +23,10 @@ class ResultModelWrapper(ResultModelWrapperMixin, ModelWrapper):
     def results_objs(self):
         if self.object:
             return self.object.senaiteresultvalue_set.all()
+
+    @property
+    def visit_code(self):
+        requisition = None
+        if self.object:
+            requisition = self.object.requisition_obj or self.object.primary_requisition
+        return getattr(requisition, 'visit_code', '')

@@ -62,6 +62,8 @@ class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
 
     date_stored = models.DateField(null=True)
 
+    published_date = models.DateField(null=True)
+
     # Results doc link
     sample_results_file = models.FileField(null=True, upload_to='senaite_results/')
 

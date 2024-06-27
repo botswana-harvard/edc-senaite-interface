@@ -18,6 +18,11 @@ class ListboardViewFilters(ListboardViewFilters):
         label='Stored',
         lookup={'sample_status': 'stored'})
 
+    received = ListboardFilter(
+        name='sample_recieved',
+        label='At Point of Testing',
+        lookup={'sample_status': 'sample_received'})
+
     primary = ListboardFilter(
         name='primary',
         label='Primary',
