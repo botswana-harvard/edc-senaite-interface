@@ -5,6 +5,7 @@ from django.apps import apps as django_apps
 from django.views.generic.base import ContextMixin
 from django.forms.models import model_to_dict
 from edc_base.utils import get_utcnow
+from edc_constants.constants import YES
 
 from ..models import ResultExportFile
 from django.http.response import HttpResponse
@@ -92,7 +93,7 @@ class ExportViewMixin(ContextMixin):
     def get_unlinked_samples_data(self):
         data = []
         model_cls = django_apps.get_model(self.requisition_model)
-        unlinked_requisitions = model_cls.objects.filter(sample_id='')
+        unlinked_requisitions = model_cls.objects.filter(sample_id='', is_drawn=YES)
 
         for requisition in unlinked_requisitions:
             drawn_dt = requisition.drawn_datetime

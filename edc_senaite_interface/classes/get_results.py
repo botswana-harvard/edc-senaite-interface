@@ -62,8 +62,8 @@ class AnalysisResult(APIResolversMixin):
                 params.update(sample_status='stored',
                               storage_location=data.get('getSamplesContainerURL', ''),
                               date_stored=stored_dt.date(), )
-            else:
-                params.update(sample_status=review_state)
+            elif review_state == 'sample_received':
+                params.update(sample_status='pending')
 
             parent_ar = data.get('ParentAnalysisRequest', {}) or {}
             detached_ar = data.get('DetachedFrom', {}) or {}

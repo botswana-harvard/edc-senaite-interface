@@ -1,4 +1,4 @@
-import os
+import os, pytz
 from django.apps import apps as django_apps
 from django.core.files import File
 from django.db import models
@@ -66,6 +66,12 @@ class SenaiteResultModelMixin(SearchSlugModelMixin, models.Model):
 
     # Results doc link
     sample_results_file = models.FileField(null=True, upload_to='senaite_results/')
+
+    @property
+    def date_sampled(self):
+        if self.report_datetime:
+            return self.report_datetime.astimezone(
+                pytz.timezone('Africa/Gaborone')).date()
 
     @property
     def requisition_model_cls(self):
