@@ -19,8 +19,8 @@ class ListboardViewFilters(ListboardViewFilters):
         lookup={'sample_status': 'stored'})
 
     received = ListboardFilter(
-        name='sample_received',
-        label='At Point of Testing',
+        name='pending',
+        label='Pending',
         lookup={'sample_status': 'pending'})
 
     primary = ListboardFilter(
