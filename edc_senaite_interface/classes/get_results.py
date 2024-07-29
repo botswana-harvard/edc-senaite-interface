@@ -43,17 +43,27 @@ class AnalysisResult(APIResolversMixin):
         """ Create parameters to populate the result object for the specific sampleID
             @param data: A dictionary of the sample details
         """
-        params = {}
         review_state = data.get('review_state', '')
-        if review_state in ['stored', 'published']:
+        sampled_dt_str = data.get('DateSampled', '')
+        dt_sampled = datetime.fromisoformat(sampled_dt_str)
+        params = {}
+
+        if review_state in ['stored', 'published', 'sample_received']:
+            params.update({'report_datetime': dt_sampled})
+
             if review_state == 'published':
-                params.update(sample_status='resulted', )
+                published_str = data.get('getDatePublished', '')
+                published_dt = datetime.fromisoformat(published_str)
+                params.update(sample_status='resulted',
+                              published_date=published_dt.date())
             elif review_state == 'stored':
                 date_str = data.get('getDateStored', '')
                 stored_dt = datetime.strptime(date_str, '%Y-%m-%d %H:%M')
                 params.update(sample_status='stored',
                               storage_location=data.get('getSamplesContainerURL', ''),
                               date_stored=stored_dt.date(), )
+            elif review_state == 'sample_received':
+                params.update(sample_status='pending')
 
             parent_ar = data.get('ParentAnalysisRequest', {}) or {}
             detached_ar = data.get('DetachedFrom', {}) or {}
@@ -92,7 +102,7 @@ class AnalysisResult(APIResolversMixin):
         """ Update an existing result value for a given `result` obj or create
             result values to capture the details of analysis tested.
             @param result: related result object
-            @param data: sample data containing details for the analyses tested 
+            @param data: sample data containing details for the analyses tested
         """
         analyses = data.get('Analyses')
         for analysis in analyses:

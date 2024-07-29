@@ -60,6 +60,16 @@ class ListboardView(ExportViewMixin, NavbarViewMixin, EdcBaseViewMixin,
     @property
     def pending_samples(self):
         result_objs = self.get_queryset().values_list('sample_id', flat=True)
-
         pending = self.collected_samples.exclude(sample_id__in=result_objs)
         return pending.count()
+
+    def get_queryset_filter_options(self, request, *args, **kwargs):
+        filter_options = super().get_queryset_filter_options(request, *args, **kwargs)
+
+        start_date = request.GET.get('start_date', None)
+        end_date = request.GET.get('end_date', None)
+        if start_date:
+            filter_options.update({'report_datetime__date__gte': start_date})
+        if end_date:
+            filter_options.update({'report_datetime__date__lte': end_date})
+        return filter_options

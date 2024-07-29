@@ -1,0 +1,24 @@
+<form class="form-inline" id="date-range-form">
+	<div class="form-group me-2">
+		<label style="font-weight:400;margin-top:5px">Date Sampled: </label>
+	</div>
+    <div class="form-group me-2">
+        <input type="text" class="form-control ml-2" id="start_date" name="start_date" placeholder="Start Date">
+    </div>
+    <div class="form-group me-2">
+    	<i class="fa fa-minus"></i>
+    </div>
+    <div class="form-group me-2">
+        <input type="text" class="form-control ml-2" id="end_date" name="end_date" placeholder="End Date">
+    </div>
+     <div class="form-group me-2">
+        <button class="btn btn-warning" id="date-filter-btn" type=submit>Apply</button>
+    </div>
+    {% block unlinked-samples %}
+    <div class="form-group pull-right">
+ 		<a class="btn btn-default" href="{% url listboard_url %}?export_pending=True">
+ 			<i class="glyphicon glyphicon-export icon-share"></i> Generate Un-linked
+ 		</a>
+ 	</div>
+ 	{% endblock unlinked-samples %}
+</form>

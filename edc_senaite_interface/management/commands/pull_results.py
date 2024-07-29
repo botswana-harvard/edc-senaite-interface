@@ -34,10 +34,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sids = options['sample_ids']
         app_label = options['app_label']
+
         if not app_label:
             raise CommandError("Please specify the app_label to pull results for.")
         else:
             result_models = getattr(app_config, 'result_models', {})
+
             if sids:
                 sample_ids = [sid.strip() for sid in sids.split(',')]
             else:
